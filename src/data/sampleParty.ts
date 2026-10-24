@@ -1,12 +1,25 @@
 import { foods } from './foods'
+import type { PlaceLocation } from '../lib/kakaoMaps'
+import { registeredCatalog } from './registeredCatalog'
+import { normalizeRadiusMeters, registeredCategoryCandidates, type RegisteredFoodCandidate } from '../lib/registeredCatalog'
+
+export interface PartySettings {
+  name: string
+  location: PlaceLocation
+  radiusKm: number
+  budgetMax: number
+}
 
 export interface Party {
   id: string
   name: string
   place: string
+  location?: PlaceLocation
   radiusKm: number
   budgetMax: number
   candidates: { foodId: string; distanceKm: number; maxPrice: number }[]
+  candidateSource?: 'demo' | 'registered'
+  registeredCandidates?: RegisteredFoodCandidate[]
   candidateSetVersion?: number
   sample?: boolean
 }
@@ -32,10 +45,25 @@ export const sampleParty: Party = {
     { foodId: 'salad', distanceKm: 3.0, maxPrice: 13000 },
   ],
   candidateSetVersion: 2,
+  candidateSource: 'demo',
   sample: true,
 }
 
-export const partyFoods = (party: Party) => party.candidates
-  .filter(candidate => candidate.distanceKm <= party.radiusKm && candidate.maxPrice <= party.budgetMax)
-  .map(candidate => foods.find(food => food.id === candidate.foodId))
-  .filter((food): food is (typeof foods)[number] => Boolean(food))
+export function withRegisteredCandidates(party: Party): Party {
+  const searchRadiusMeters = normalizeRadiusMeters(party.radiusKm * 1000)
+  return {
+    ...party, radiusKm: searchRadiusMeters / 1000, candidates: [], candidateSource: 'registered',
+    registeredCandidates: party.location ? registeredCategoryCandidates(registeredCatalog, {
+      location: party.location, searchRadiusMeters, budgetPerPerson: party.budgetMax,
+    }) : [],
+  }
+}
+
+export function partyFoods(party: Party) {
+  // Only the explicit development sample route may show the legacy food fixture.
+  if (party.sample) return party.candidates
+    .filter(candidate => candidate.distanceKm <= party.radiusKm && candidate.maxPrice <= party.budgetMax)
+    .map(candidate => foods.find(food => food.id === candidate.foodId))
+    .filter((food): food is (typeof foods)[number] => Boolean(food))
+  return party.candidateSource === 'registered' ? party.registeredCandidates || [] : []
+}

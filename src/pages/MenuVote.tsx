@@ -1,5 +1,6 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { partyFoods, type Party } from '../data/sampleParty'
+import { formatRadius } from '../lib/registeredCatalog'
 
 type Vote = { reviewed: string[]; excluded: string[] }
 type Gesture = { id: string; pointerId: number; x: number; y: number; axis: 'pending' | 'horizontal' | 'vertical' }
@@ -20,7 +21,9 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
 }) {
   const candidates = partyFoods(party)
   const key = voteKey(party.id, participantId)
-  const [vote, setVote] = useState<Vote>(() => readVote(key, candidates.map(food => food.id)))
+  const candidateIds = new Set(candidates.map(food => food.id))
+  const [storedVote, setVote] = useState<Vote>(() => readVote(key, candidates.map(food => food.id)))
+  const vote = { reviewed: storedVote.reviewed.filter(id => candidateIds.has(id)), excluded: storedVote.excluded.filter(id => candidateIds.has(id)) }
   const [history, setHistory] = useState<Vote[]>([])
   const [notice, setNotice] = useState('')
   const [panel, setPanel] = useState<'profile' | 'party' | null>(null)
@@ -80,13 +83,15 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
 
   return <main className="onboarding vote-screen">
     {party.sample && <div className="sample-ribbon">개발용 샘플 파티</div>}
+    {!party.sample && party.candidateSource === 'demo' && <div className="sample-ribbon">메뉴·가격은 시연 데이터입니다</div>}
+    {party.candidateSource === 'registered' && <div className="sample-ribbon">등록 식당의 판매 메뉴 · 시연용 등록 데이터</div>}
     <header className="preferences-header">
       <button onClick={onBack} aria-label="파티 대기실로 돌아가기">〈 <span>대기실</span></button>
       <span className="preferences-logo"><img src={asset('logo.png')} alt="시로 XIRO" /></span>
       <button className="undo-button" disabled={!history.length} onClick={undo}><img src={asset('return.png')} alt="" /> 되돌리기</button>
     </header>
     <section className="review-banner">
-      <small>{party.place} 반경 {party.radiusKm}km</small>
+      <small>{party.place} 반경 {formatRadius(party.radiusKm * 1000)}</small>
       <h1>메뉴 확인 <b>{vote.reviewed.length}<span>/{candidates.length}</span></b></h1>
       <progress value={vote.reviewed.length} max={candidates.length || 1} aria-label="메뉴 확인 진행률" />
       <img src={asset('mascot.png')} alt="주먹밥 캐릭터" />
