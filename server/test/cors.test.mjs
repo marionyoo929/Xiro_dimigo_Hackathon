@@ -8,7 +8,7 @@ const origins = ['https://www.xiro.my', 'https://xiro.my', 'https://xiro-dimigo-
 const demoCatalog = JSON.parse(readFileSync(new URL('./fixtures/catalog.json', import.meta.url), 'utf8'))
 async function fixture(t) {
   const instance = createApp({ demo: true, demoCatalog, localAuth: true })
-  const server = instance.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve))
+  const server = instance.app.listen(0, '0.0.0.0'); await new Promise(resolve => server.once('listening', resolve))
   t.after(async () => { instance.close(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)) })
   return { ...instance, base: `http://127.0.0.1:${server.address().port}/api` }
 }

@@ -17,7 +17,7 @@ const profileContract = ajv.compile({ components: extensions.components, ...exte
 const statsContract = ajv.compile({ components: extensions.components, ...extensions.components.schemas.RestaurantStats })
 async function fixture(t) {
   const instance = createApp({ demo: true, demoCatalog, rateLimit: 10000 })
-  const server = instance.app.listen(0, '127.0.0.1'); await new Promise(r => server.once('listening', r))
+  const server = instance.app.listen(0, '0.0.0.0'); await new Promise(r => server.once('listening', r))
   t.after(async () => { instance.close(); server.closeAllConnections(); await new Promise(r => server.close(r)) })
   const request = async (path, token, method = 'GET', body, version, status = 200) => {
     const response = await fetch(`http://127.0.0.1:${server.address().port}/api/v1${path}`, { method, headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID(), ...(version ? { 'If-Match': `"${version}"` } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) })

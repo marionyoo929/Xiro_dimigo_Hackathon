@@ -68,7 +68,7 @@ API 통합 테스트는 별도 메모리/임시 SQLite DB를 씁니다. E2E는 �
 ```env
 NODE_ENV=production
 PUBLIC_ORIGIN=https://서비스_도메인
-API_HOST=127.0.0.1
+API_HOST=0.0.0.0
 API_PORT=3001
 LOCAL_AUTH_ENABLED=true
 MAX_MEMBERS=8

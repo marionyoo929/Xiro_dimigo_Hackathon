@@ -10,7 +10,7 @@ const demoCatalog = JSON.parse(readFileSync(new URL('./fixtures/catalog.json', i
 
 async function fixture(t, dbPath) {
   const instance = createApp({ demo: true, demoCatalog, rateLimit: 10000, dbPath })
-  const server = instance.app.listen(0, '127.0.0.1'); await new Promise(r => server.once('listening', r))
+  const server = instance.app.listen(0, '0.0.0.0'); await new Promise(r => server.once('listening', r))
   const base = `http://127.0.0.1:${server.address().port}/api`
   t.after(async () => { instance.close(); server.closeAllConnections(); await new Promise(r => server.close(r)) })
   async function request(path, { token, method = 'GET', body, version, key, status = 200 } = {}) {
@@ -205,7 +205,7 @@ test('SSE authorization, private views, reconnect replay, expired cursor and str
 })
 
 test('local production credentials are provisioned server-side, hashed, single-use and role-safe', async t => {
-  const f = createApp({ localAuth: true }), server = f.app.listen(0, '127.0.0.1'); await new Promise(r => server.once('listening', r))
+  const f = createApp({ localAuth: true }), server = f.app.listen(0, '0.0.0.0'); await new Promise(r => server.once('listening', r))
   t.after(async () => { f.close(); server.closeAllConnections(); await new Promise(r => server.close(r)) })
   const origin = `http://127.0.0.1:${server.address().port}`, password = 'test-only-password-123'
   provisionAccount(f.store, { email: 'owner@example.com', displayName: '매장주', password, merchant: true })

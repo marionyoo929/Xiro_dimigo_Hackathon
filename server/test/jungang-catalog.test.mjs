@@ -14,7 +14,7 @@ test('verified Jungang catalog keeps public contracts through two-person review 
   assert.ok(catalog.restaurants.every(r => catalog.menus.some(menu => menu.restaurantId === r.id)))
   assert.ok(catalog.menus.every(menu => menu.source?.url && menu.informationStatus === 'INCOMPLETE'))
   const instance = createApp({ demo: true, rateLimit: 10000 })
-  const server = instance.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve))
+  const server = instance.app.listen(0, '0.0.0.0'); await new Promise(resolve => server.once('listening', resolve))
   t.after(async () => { instance.close(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)) })
   const origin = `http://127.0.0.1:${server.address().port}`
   async function request(path, { token, method = 'GET', body, version, status = 200 } = {}) {
