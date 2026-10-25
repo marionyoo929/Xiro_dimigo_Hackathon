@@ -1,5 +1,8 @@
 import { randomId } from './randomId'
 import type { AuthTokens, GuestSession, GuestOrderSession, User } from '../types/api'
+const API_BASE = (import.meta.env.VITE_API_URL || '')
+  .trim()
+  .replace(/\/+$/, '')
 
 type Session = { accessToken: string; refreshToken?: string; user: User }
 const key = 'xiro.api-session.v1'
@@ -41,7 +44,11 @@ function requireTokens(value: AuthTokens): AuthTokens {
 async function refresh() {
   if (!session?.refreshToken) throw new ApiError(401, 'TOKEN_EXPIRED', '다시 로그인해 주세요.')
   if (!refreshing) refreshing = (async () => {
-    const response = await fetch('/api/v1/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: session!.refreshToken }) })
+    const response = await fetch(`${API_BASE}/api/v1/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: session!.refreshToken }),
+    })
     const tokens = requireTokens(await readResponse<AuthTokens>(response, true))
     setSession(tokens)
   })().finally(() => { refreshing = null })
@@ -59,7 +66,17 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   // Retain the same idempotency key on refresh/retry. A version conflict is shown
   // to the user and never silently reapplies a state-changing action.
   const stableOptions = { ...options, key: options.key || randomId() }
-  const request = () => fetch(`/api${path.startsWith('/dev/') || path === '/health' ? '' : '/v1'}${path}`, { method: options.method || 'GET', headers: headers(stableOptions), body: options.body === undefined ? undefined : JSON.stringify(options.body), signal: options.signal })
+  const request = () => fetch(
+    `${API_BASE}/api${path.startsWith('/dev/') || path === '/health' ? '' : '/v1'}${path}`,
+    {
+      method: options.method || 'GET',
+      headers: headers(stableOptions),
+      body: options.body === undefined
+        ? undefined
+        : JSON.stringify(options.body),
+      signal: options.signal,
+    }
+  )
   let response: Response
   try { response = await request(); if (response.status === 401 && session?.refreshToken) { await refresh(); response = await request() } }
   catch (e) { if (e instanceof ApiError || e instanceof DOMException && e.name === 'AbortError') throw e; throw new ApiError(0, 'NETWORK_ERROR', '연결하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.') }
@@ -94,7 +111,14 @@ export function subscribe(path: string, onEvent: (event: StreamEvent) => void, o
   const run = async () => {
     while (!controller.signal.aborted) {
       try {
-        let response = await fetch(`/api/v1${path}/events`, { headers: { ...headers({}), Accept: 'text/event-stream', ...(cursor ? { 'Last-Event-ID': cursor } : {}) }, signal: controller.signal })
+        let response = await fetch(`${API_BASE}/api/v1${path}/events`, {
+          headers: {
+            ...headers({}),
+            Accept: 'text/event-stream',
+            ...(cursor ? { 'Last-Event-ID': cursor } : {}),
+          },
+          signal: controller.signal,
+        })
         if (response.status === 401 && session?.refreshToken) { await refresh(); continue }
         if (response.status === 409) { cursor = ''; continue }
         if (response.status === 401 || response.status === 404) { onStatus(false); return }
@@ -117,7 +141,7 @@ export function subscribe(path: string, onEvent: (event: StreamEvent) => void, o
               if (eventId) cursor = eventId
             }
           }
-        } finally { await reader.cancel().catch(() => {}); reader.releaseLock() }
+        } finally { await reader.cancel().catch(() => { }); reader.releaseLock() }
       } catch { /* Reconnect and re-read authoritative resources. */ }
       onStatus(false)
       if (controller.signal.aborted) break
