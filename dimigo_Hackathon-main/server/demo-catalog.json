@@ -1,0 +1,272 @@
+{
+  "categories": [
+    {
+      "id": "bibimbap",
+      "name": "돌솥비빔밥",
+      "description": "쌀밥 나물4종 비빔소스",
+      "image": "bibimbap.png"
+    },
+    {
+      "id": "tonkatsu",
+      "name": "돈가스",
+      "description": "돼지고기 돈가스 소스 양배추",
+      "image": "tonkatsu.png"
+    },
+    {
+      "id": "noodles",
+      "name": "잔치국수",
+      "description": "멸치국물 소면 대파",
+      "image": "noodles.png"
+    },
+    {
+      "id": "spicy",
+      "name": "매운 아부라소바",
+      "description": "소바 차슈 계란",
+      "image": "spicy.png"
+    },
+    {
+      "id": "stew",
+      "name": "김치찌개",
+      "description": "잘 익은 김치와 돼지고기",
+      "image": "kimchi_stew.webp"
+    },
+    {
+      "id": "sushi",
+      "name": "초밥",
+      "description": "신선한 생선과 초대리 밥",
+      "image": "sushi.jpg"
+    },
+    {
+      "id": "pasta",
+      "name": "파스타",
+      "description": "바질 소스와 쫄깃한 면",
+      "image": "Pasta.jpg"
+    },
+    {
+      "id": "burger",
+      "name": "햄버거",
+      "description": "소고기 패티와 신선한 채소",
+      "image": "hamburger.png"
+    },
+    {
+      "id": "rice",
+      "name": "볶음밥",
+      "description": "고슬고슬한 밥과 달걀",
+      "image": "fried_rice.jpg"
+    },
+    {
+      "id": "pizza",
+      "name": "피자",
+      "description": "치즈와 토마토 소스",
+      "image": "pizza.jpg"
+    },
+    {
+      "id": "salad",
+      "name": "샐러드",
+      "description": "싱싱한 채소와 방울토마토",
+      "image": "salad.jpg"
+    }
+  ],
+  "restaurants": [
+    {
+      "id": "demo-city-a",
+      "name": "시청 등록 식당 A (시연)",
+      "address": "서울 시청 인근 · 시연 위치",
+      "location": {
+        "latitude": 37.5676,
+        "longitude": 126.9787
+      }
+    },
+    {
+      "id": "demo-city-b",
+      "name": "시청 등록 식당 B (시연)",
+      "address": "서울 시청 인근 · 시연 위치",
+      "location": {
+        "latitude": 37.5701,
+        "longitude": 126.9787
+      }
+    },
+    {
+      "id": "demo-city-c",
+      "name": "시청 등록 식당 C (시연)",
+      "address": "서울 시청 인근 · 시연 위치",
+      "location": {
+        "latitude": 37.574,
+        "longitude": 126.9787
+      }
+    },
+    {
+      "id": "demo-wadong-a",
+      "name": "와동 등록 식당 A (시연)",
+      "address": "와동공원 인근 · 시연 위치",
+      "location": {
+        "latitude": 37.3416,
+        "longitude": 126.8253
+      }
+    },
+    {
+      "id": "demo-wadong-b",
+      "name": "와동 등록 식당 B (시연)",
+      "address": "와동공원 인근 · 시연 위치",
+      "location": {
+        "latitude": 37.3444,
+        "longitude": 126.8253
+      }
+    },
+    {
+      "id": "demo-wadong-c",
+      "name": "와동 등록 식당 C (시연)",
+      "address": "와동공원 인근 · 시연 위치",
+      "location": {
+        "latitude": 37.3482,
+        "longitude": 126.8253
+      }
+    }
+  ],
+  "menus": [
+    {
+      "id": "demo-city-bibimbap",
+      "restaurantId": "demo-city-a",
+      "name": "돌솥비빔밥",
+      "description": "나물과 소고기를 담은 돌솥비빔밥",
+      "price": 12000,
+      "categoryId": "bibimbap",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-city-noodles",
+      "restaurantId": "demo-city-a",
+      "name": "잔치국수",
+      "description": "멸치 육수 잔치국수",
+      "price": 8000,
+      "categoryId": "noodles",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-city-tonkatsu",
+      "restaurantId": "demo-city-b",
+      "name": "등심 돈가스",
+      "description": "바삭한 등심 돈가스",
+      "price": 13000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-city-bibimbap-b",
+      "restaurantId": "demo-city-b",
+      "name": "야채비빔밥",
+      "description": "계절 나물 비빔밥",
+      "price": 10000,
+      "categoryId": "bibimbap",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-city-pasta",
+      "restaurantId": "demo-city-c",
+      "name": "바질 파스타",
+      "description": "바질 소스 파스타",
+      "price": 18000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-city-salad",
+      "restaurantId": "demo-city-c",
+      "name": "그린 샐러드",
+      "description": "신선한 채소 샐러드",
+      "price": 11000,
+      "categoryId": "salad",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-city-soldout",
+      "restaurantId": "demo-city-a",
+      "name": "품절 초밥",
+      "description": "시연용 품절 메뉴",
+      "price": 15000,
+      "categoryId": "sushi",
+      "salesStatus": "SOLD_OUT"
+    },
+    {
+      "id": "demo-city-hidden",
+      "restaurantId": "demo-city-a",
+      "name": "숨긴 피자",
+      "description": "시연용 숨김 메뉴",
+      "price": 15000,
+      "categoryId": "pizza",
+      "salesStatus": "HIDDEN"
+    },
+    {
+      "id": "demo-wadong-bibimbap",
+      "restaurantId": "demo-wadong-a",
+      "name": "돌솥비빔밥",
+      "description": "나물과 소고기를 담은 돌솥비빔밥",
+      "price": 12000,
+      "categoryId": "bibimbap",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-wadong-noodles",
+      "restaurantId": "demo-wadong-a",
+      "name": "잔치국수",
+      "description": "멸치 육수 잔치국수",
+      "price": 8000,
+      "categoryId": "noodles",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-wadong-tonkatsu",
+      "restaurantId": "demo-wadong-b",
+      "name": "등심 돈가스",
+      "description": "바삭한 등심 돈가스",
+      "price": 13000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-wadong-bibimbap-b",
+      "restaurantId": "demo-wadong-b",
+      "name": "야채비빔밥",
+      "description": "계절 나물 비빔밥",
+      "price": 10000,
+      "categoryId": "bibimbap",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-wadong-pasta",
+      "restaurantId": "demo-wadong-c",
+      "name": "바질 파스타",
+      "description": "바질 소스 파스타",
+      "price": 18000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-wadong-salad",
+      "restaurantId": "demo-wadong-c",
+      "name": "그린 샐러드",
+      "description": "신선한 채소 샐러드",
+      "price": 11000,
+      "categoryId": "salad",
+      "salesStatus": "AVAILABLE"
+    },
+    {
+      "id": "demo-wadong-soldout",
+      "restaurantId": "demo-wadong-a",
+      "name": "품절 초밥",
+      "description": "시연용 품절 메뉴",
+      "price": 15000,
+      "categoryId": "sushi",
+      "salesStatus": "SOLD_OUT"
+    },
+    {
+      "id": "demo-wadong-hidden",
+      "restaurantId": "demo-wadong-a",
+      "name": "숨긴 피자",
+      "description": "시연용 숨김 메뉴",
+      "price": 15000,
+      "categoryId": "pizza",
+      "salesStatus": "HIDDEN"
+    }
+  ]
+}
