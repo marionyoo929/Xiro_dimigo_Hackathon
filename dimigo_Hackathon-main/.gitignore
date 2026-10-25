@@ -6,7 +6,6 @@ dist/
 !.env.example
 *.tsbuildinfo
 data/*
-!data/demo.sqlite
 test-results/
 playwright-report/
 backups/

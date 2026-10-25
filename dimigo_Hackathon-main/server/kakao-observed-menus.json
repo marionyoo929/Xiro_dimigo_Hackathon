@@ -1,0 +1,493 @@
+{
+  "checkedAt": "2026-10-25",
+  "menusByPlace": {
+    "16311884": [
+      {
+        "imageUrls": [],
+        "name": "닭갈비 (220g)",
+        "price": 17500
+      },
+      {
+        "imageUrls": [],
+        "name": "생삼겹살 (180g)",
+        "price": 17500
+      },
+      {
+        "imageUrls": [],
+        "name": "소갈비살 (200g)",
+        "price": 21000
+      },
+      {
+        "imageUrls": [],
+        "name": "부대찌개 (소)",
+        "price": 26000
+      },
+      {
+        "imageUrls": [],
+        "name": "냉면",
+        "price": 7500
+      },
+      {
+        "imageUrls": [],
+        "name": "김치찌개 (소)",
+        "price": 25000
+      },
+      {
+        "imageUrls": [],
+        "name": "토종닭도리탕 (중)",
+        "price": 49000
+      },
+      {
+        "imageUrls": [],
+        "name": "토종닭도리탕 (대)",
+        "price": 55000
+      },
+      {
+        "imageUrls": [],
+        "name": "냉면/막국수",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "왕갈비탕",
+        "price": 16000
+      },
+      {
+        "imageUrls": [],
+        "name": "오리주물럭",
+        "price": 18000
+      },
+      {
+        "imageUrls": [],
+        "name": "부대찌개 (중)",
+        "price": 36000
+      },
+      {
+        "imageUrls": [],
+        "name": "부대찌개 (대)",
+        "price": 44000
+      },
+      {
+        "imageUrls": [],
+        "name": "김치찌개 (중)",
+        "price": 37000
+      },
+      {
+        "imageUrls": [],
+        "name": "김치찌개 (대)",
+        "price": 44000
+      },
+      {
+        "imageUrls": [],
+        "name": "쟁반막국수",
+        "price": 19000
+      }
+    ],
+    "395041368": [
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F0C7C6AE6C0B94FB480740D3BA9B3D457"
+        ],
+        "name": "[점심특선] 월남쌈 샤브 정식",
+        "price": 15900
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F091C9EC1A9014A9D924046A481C96F5C"
+        ],
+        "name": "월남쌈 버섯 샤브",
+        "price": 23900
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FF9E05AA2DD1445D585E0F531E355FA21"
+        ],
+        "name": "월남쌈 스페셜 샤브",
+        "price": 28000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FBB156853BDF14CAEA0ECC6AAEE0C0800"
+        ],
+        "name": "얼큰 미나리 샤브",
+        "price": 19900
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F5A5EF137AA52438F98E9381C27E563C2"
+        ],
+        "name": "[점심특선] 월남쌈 버섯 샤브 정식",
+        "price": 17500
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FFF08A7C895A04E9C91E806F051EEB1F5"
+        ],
+        "name": "[점심특선] 월날쌈 와규 샤브 정식",
+        "price": 17000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F26D7436EC1E54C8E9B361A230CAFEC63"
+        ],
+        "name": "[점심특선] 명품 한우 샤브 정식",
+        "price": 20000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FC50BC5B6AB434263BD619F15332767B5"
+        ],
+        "name": "[점심특선] 월남쌈 해물 샤브 정식",
+        "price": 18900
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FEB2A2FCE96C44E01B9CCFF643171AEF1"
+        ],
+        "name": "[점심특선] 얼큰 미나리 샤브 정식",
+        "price": 17900
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F929EB813008C4939AD720FC575D4E3F6"
+        ],
+        "name": "월남쌈 샤브",
+        "price": 18900
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FC0C109D3884C4B6192814CD2BC1D2C3B"
+        ],
+        "name": "월남쌈 와규 샤브",
+        "price": 23000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FE9106D8A6C474843A2EA0DE111244F9E"
+        ],
+        "name": "명품 한우 샤브",
+        "price": 26500
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F905B96B1160144EF88DB8451263D142C"
+        ],
+        "name": "우삼겹 구이 & 샤브",
+        "price": 21000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F11E153EA33774A819548594F49FB3F08"
+        ],
+        "name": "돈삽겹 구이 & 샤브",
+        "price": 22000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FBBCA93FC91F442E08A967E920511383D"
+        ],
+        "name": "한우 우삽겹 구이 & 샤브",
+        "price": 23900
+      }
+    ],
+    "589846825": [
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FEF61014D244B4E889EAB4FC824888C8A"
+        ],
+        "name": "살치살 스테이크(270G)",
+        "price": 39000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F3FA1BA64188A47A49F6AD05ED0045A11"
+        ],
+        "name": "바질 페스토 파스타(season)",
+        "price": 19000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F88F4A60CD9EE425682E03468A264B120"
+        ],
+        "name": "명란 크림 파스타",
+        "price": 18000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F40660F74D19548B0B7EA923195BD64A9"
+        ],
+        "name": "스파이시 치킨 리조또",
+        "price": 19000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FB6EC9B58429044A2A0FB5C52EC806334"
+        ],
+        "name": "클래식 까르보나라",
+        "price": 17000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FEF629D3174DB4C988ABDEDE9A601DD8A"
+        ],
+        "name": "봉골레 파스타",
+        "price": 18000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F8F56B916689D4B6585787AF486755534"
+        ],
+        "name": "통베이컨 토마토 파스타",
+        "price": 18000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F03A8C7EEB981409BB9231B234D408EA0"
+        ],
+        "name": "라구 파스타(바게트2pcs)",
+        "price": 19000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F536BD8D986AA4F42BAD3989CE959B93F"
+        ],
+        "name": "쉬림프 먹물 파스타",
+        "price": 21000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FC2747B08095645968A512321A797EED2"
+        ],
+        "name": "부채살 스테이크(240G)",
+        "price": 29000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F71D94AC3FCD44D469B52C267A9301C5D"
+        ],
+        "name": "스테이크 토마토 리조또",
+        "price": 18000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FDACBB58E709F47F8994429A2765C8FE8"
+        ],
+        "name": "오징어 먹물 리조또",
+        "price": 19000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FBF543D4BB803423B8C6BE53751D0D607"
+        ],
+        "name": "포크너 샐러드",
+        "price": 14000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FB83BAC7AD8CE46828C0B558BE21D546D"
+        ],
+        "name": "아보카도 샐러드",
+        "price": 16000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FC0C00F2D51D840AF9855A125DBE06234"
+        ],
+        "name": "호밀 바게트 추가(4pcs)",
+        "price": 3000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F9A775D4912B64D77B9BE6E311D862F37"
+        ],
+        "name": "단호박 스프(바게트2pcs)",
+        "price": 12000
+      }
+    ],
+    "712291276": [
+      {
+        "imageUrls": [],
+        "name": "히포시라멘",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "로스까스",
+        "price": 9000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fplace%2F7A29D8195D6B4431B7415E473C60B038"
+        ],
+        "name": "미소라멘",
+        "price": 8000,
+        "imageSourceSection": "동일 매장 배달 메뉴의 같은 이름 사진"
+      },
+      {
+        "imageUrls": [],
+        "name": "차슈라멘",
+        "price": 11000
+      },
+      {
+        "imageUrls": [],
+        "name": "생선까스",
+        "price": 11000
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fplace%2F28C9FF7F470541A6AB602F5EBD5C86E9"
+        ],
+        "name": "돈꼬츠라멘",
+        "price": 8000,
+        "imageSourceSection": "동일 매장 배달 메뉴의 같은 이름 사진"
+      },
+      {
+        "imageUrls": [
+          "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fplace%2FA2292D96CF1C4929A569B5B773E069C4"
+        ],
+        "name": "시오라멘",
+        "price": 8000,
+        "imageSourceSection": "동일 매장 배달 메뉴의 같은 이름 사진"
+      },
+      {
+        "imageUrls": [],
+        "name": "탄탄언",
+        "price": 8000
+      },
+      {
+        "imageUrls": [],
+        "name": "돈카츠라멘",
+        "price": 11000
+      },
+      {
+        "imageUrls": [],
+        "name": "크림돈꼬츠라멘",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "냉라멘",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "히레까스",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "치킨까스",
+        "price": 10000
+      },
+      {
+        "imageUrls": [],
+        "name": "매운돈까스",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "치즈돈까스",
+        "price": 12000
+      },
+      {
+        "imageUrls": [],
+        "name": "돈꼬츠소유라멘",
+        "price": 8000
+      },
+      {
+        "imageUrls": [],
+        "name": "바이탕라멘",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "모듬까스",
+        "price": 11000
+      },
+      {
+        "imageUrls": [],
+        "name": "까츠카레",
+        "price": 12000
+      }
+    ],
+    "1325696737": [
+      {
+        "imageUrls": [],
+        "name": "옛날 왕 돈까스",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "30cm 특대 돈까스",
+        "price": 11000
+      },
+      {
+        "imageUrls": [],
+        "name": "해물볶음우동",
+        "price": 9500
+      },
+      {
+        "imageUrls": [],
+        "name": "도전 돈까스",
+        "price": 21000
+      },
+      {
+        "imageUrls": [],
+        "name": "생선까스",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "함박스테이크",
+        "price": 9000
+      },
+      {
+        "imageUrls": [],
+        "name": "안심 왕까스",
+        "price": 9500
+      },
+      {
+        "imageUrls": [],
+        "name": "치즈 왕까스",
+        "price": 9500
+      },
+      {
+        "imageUrls": [],
+        "name": "모듬정식",
+        "price": 9500
+      },
+      {
+        "imageUrls": [],
+        "name": "냉모밀(계절음식)",
+        "price": 8000
+      },
+      {
+        "imageUrls": [],
+        "name": "우동",
+        "price": 7000
+      },
+      {
+        "imageUrls": [],
+        "name": "김치볶음밥",
+        "price": 8000
+      },
+      {
+        "imageUrls": [],
+        "name": "오므라이스",
+        "price": 8000
+      },
+      {
+        "imageUrls": [],
+        "name": "김치오므라이스",
+        "price": 8000
+      }
+    ]
+  },
+  "restaurantImages": {
+    "16311884": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F8ae3479a69b69035ce29cf7d1d2907f22a1e290f%3Foriginal",
+    "395041368": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F69E99BB5B9FB4B63A5D5EE6A7FA27BA7",
+    "589846825": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FE0AAAE4D1C284C6885345ECE4517AD34",
+    "712291276": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F1970254ad8501598cf5715d529ba6eca15ab6558%3Foriginal",
+    "1325696737": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=https%3A%2F%2Fpostfiles.pstatic.net%2FMjAyNTA3MTJfMjcz%2FMDAxNzUyMzIxMTM2NDg4.ziPlsBCmeTeSQ9Jds-i4q-LtiR2CMAlYwzF7QWpdKBsg.lHu8aQU5lMHTEKlickOvYRZ5eD_XfZH3KLtoNMjfXgsg.JPEG%2Foutput%25EF%25BC%25BF981940050.jpg%3Ftype%3Dw773"
+  }
+}

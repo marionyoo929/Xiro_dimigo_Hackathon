@@ -11,7 +11,8 @@ interface PlaceService {
   keywordSearch(query: string, callback: SearchCallback, options: { page: number; size: number }): void
   categorySearch(code: string, callback: SearchCallback, options: { location: LatLng; radius: number; sort: string; size: number }): void
 }
-interface LatLng { getLat(): number; getLng(): number }
+export interface LatLng { getLat(): number; getLng(): number }
+export interface MapMouseEvent { latLng: LatLng }
 interface Bounds { extend(position: LatLng): void }
 export interface MapInstance {
   setBounds(bounds: Bounds, top?: number, right?: number, bottom?: number, left?: number): void
@@ -26,7 +27,10 @@ export interface MapsSDK {
   LatLng: new (latitude: number, longitude: number) => LatLng
   LatLngBounds: new () => Bounds
   Map: new (container: HTMLElement, options: { center: LatLng; level: number }) => MapInstance
-  Marker: new (options: { map: MapInstance; position: LatLng; title: string }) => Overlay
+  Marker: new (options: { map: MapInstance; position: LatLng; title: string; draggable?: boolean; image?: object; zIndex?: number }) => Overlay & { getPosition(): LatLng }
+  MarkerImage: new (src: string, size: object, options?: { offset: object }) => object
+  Size: new (width: number, height: number) => object
+  Point: new (x: number, y: number) => object
   CustomOverlay: new (options: { map: MapInstance; position: LatLng; content: HTMLElement; yAnchor: number; zIndex: number }) => Overlay
   Circle: new (options: {
     map: MapInstance; center: LatLng; radius: number; strokeWeight: number; strokeColor: string
@@ -34,8 +38,12 @@ export interface MapsSDK {
   }) => Overlay & { getBounds(): Bounds }
   ZoomControl: new () => object
   ControlPosition: { RIGHT: number }
-  event: { addListener(target: object, type: string, callback: () => void): void; removeListener(target: object, type: string, callback: () => void): void }
-  services: { Places: new () => PlaceService; Status: { OK: string; ZERO_RESULT: string }; SortBy: { DISTANCE: string } }
+  event: { addListener(target: object, type: string, callback: (event: MapMouseEvent) => void): void; removeListener(target: object, type: string, callback: (event: MapMouseEvent) => void): void }
+  services: {
+    Places: new () => PlaceService
+    Geocoder: new () => { coord2Address(longitude: number, latitude: number, callback: (result: { road_address?: { address_name: string } | null; address?: { address_name: string } | null }[], status: string) => void): void }
+    Status: { OK: string; ZERO_RESULT: string }; SortBy: { DISTANCE: string }
+  }
 }
 declare global { interface Window { kakao?: { maps: MapsSDK } } }
 let pendingSDK: Promise<MapsSDK> | null = null
@@ -103,5 +111,17 @@ export function searchNearbyStation(sdk: MapsSDK, place: PlaceLocation): Promise
         latitude: Number(station.y), longitude: Number(station.x), url: station.place_url, category: station.category_name,
       } : null)
     }, { location: new sdk.LatLng(place.latitude, place.longitude), radius: 1500, sort: sdk.services.SortBy.DISTANCE, size: 5 })
+  })
+}
+
+export function addressAtPoint(sdk: MapsSDK, latitude: number, longitude: number): Promise<string | null> {
+  return new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => reject(new Error('주소 확인이 늦어지고 있어요. 상세 위치를 입력해 주세요.')), 8000)
+    new sdk.services.Geocoder().coord2Address(longitude, latitude, (result, status) => {
+      clearTimeout(timeout)
+      if (status === sdk.services.Status.ZERO_RESULT) { resolve(null); return }
+      if (status !== sdk.services.Status.OK) { reject(new Error('주소를 확인하지 못했어요. 상세 위치를 입력해 주세요.')); return }
+      resolve(result[0]?.road_address?.address_name || result[0]?.address?.address_name || null)
+    })
   })
 }

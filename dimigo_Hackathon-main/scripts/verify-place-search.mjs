@@ -7,7 +7,7 @@ const source = await readFile(new URL('../src/lib/kakaoMaps.ts', import.meta.url
 const javascript = ts.transpileModule(source, {
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 },
 }).outputText.replace('import.meta.env.VITE_KAKAO_MAP_APP_KEY', '"test-javascript-key"')
-const { searchPlaces, loadKakaoMaps } = await import(`data:text/javascript;base64,${Buffer.from(javascript).toString('base64')}`)
+const { searchPlaces, loadKakaoMaps, addressAtPoint } = await import(`data:text/javascript;base64,${Buffer.from(javascript).toString('base64')}`)
 globalThis.window = { setTimeout, clearTimeout }
 const pagination = { totalCount: 6, current: 2, last: 2, hasNextPage: false }
 const place = {
@@ -36,6 +36,14 @@ await assert.rejects(searchPlaces(sdkFor('ERROR'), '약속 공원', 2), /장소�
 window.setTimeout = callback => setTimeout(callback, 1)
 await assert.rejects(searchPlaces({ services: { Places: class { keywordSearch() {} } } }, '약속 공원', 2), /검색 응답이 늦어지고 있어요/)
 window.setTimeout = setTimeout
+
+const geoSDK = (result, status = 'OK') => ({ services: { Status: { OK: 'OK', ZERO_RESULT: 'ZERO_RESULT' }, Geocoder: class {
+  coord2Address(longitude, latitude, callback) { assert.equal(longitude, 126.9); assert.equal(latitude, 37.5); callback(result, status) }
+} } })
+assert.equal(await addressAtPoint(geoSDK([{ road_address: { address_name: '도로명' }, address: { address_name: '지번' } }]), 37.5, 126.9), '도로명')
+assert.equal(await addressAtPoint(geoSDK([{ road_address: null, address: { address_name: '지번' } }]), 37.5, 126.9), '지번')
+assert.equal(await addressAtPoint(geoSDK([], 'ZERO_RESULT'), 37.5, 126.9), null)
+await assert.rejects(addressAtPoint(geoSDK([], 'ERROR'), 37.5, 126.9), /주소를 확인하지 못했어요/)
 
 // Concurrent React mounts share one SDK request; a failed load can be retried.
 let appended = 0

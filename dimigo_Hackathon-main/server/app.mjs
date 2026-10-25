@@ -9,6 +9,7 @@ import { getOrder } from './orders.mjs'
 import { scheduleJob } from './reviews.mjs'
 import { seed, seedReference, restrictionTargets } from './seed.mjs'
 import { createLocalCode } from './local-auth.mjs'
+import { readProfile, saveProfile, merchantStats } from './customer-stats.mjs'
 
 export function createApp(options = {}) {
   const store = new Store(options.dbPath)
@@ -53,7 +54,22 @@ export function createApp(options = {}) {
       req.user = service.authenticate(req)
       const keys = Object.keys(req.query), latitude = Number(req.query.latitude), longitude = Number(req.query.longitude), radius = Number(req.query.searchRadiusMeters)
       if (keys.length !== 3 || keys.some(k => !['latitude', 'longitude', 'searchRadiusMeters'].includes(k)) || !Number.isFinite(latitude) || Math.abs(latitude) > 90 || !Number.isFinite(longitude) || Math.abs(longitude) > 180 || !Number.isInteger(radius) || radius < 200 || radius > 1000) fail(422, 'VALIDATION_ERROR', '위치와 검색 반경을 확인해 주세요.')
-      res.json({ count: store.all('restaurant').filter(r => distance({ latitude, longitude }, r.location) <= radius).length, searchRadiusMeters: radius })
+      res.json({ count: store.all('restaurant').filter(r => !r.catalogRetired && distance({ latitude, longitude }, r.location) <= radius).length, searchRadiusMeters: radius })
+    } catch (e) { next(e) }
+  })
+  app.get('/api/v1/me/profile', (req, res, next) => {
+    try { const user = service.authenticate(req); res.json(readProfile(service, user.id)) } catch (e) { next(e) }
+  })
+  app.put('/api/v1/me/profile', (req, res, next) => {
+    try { const user = service.authenticate(req); res.json(store.transaction(() => saveProfile(service, user.id, req.body))) } catch (e) { next(e) }
+  })
+  app.get('/api/v1/merchant/restaurants/:restaurantId/stats', (req, res, next) => {
+    try {
+      const user = service.authenticate(req)
+      merchantRestaurant(service, req.params.restaurantId, user)
+      const days = req.query.days === undefined ? 30 : Number(req.query.days)
+      if (Object.keys(req.query).some(key => key !== 'days') || req.query.days !== undefined && typeof req.query.days !== 'string' || ![3, 7, 30].includes(days)) fail(422, 'VALIDATION_ERROR', '통계 기간은 3일, 일주일, 한 달 중 선택해 주세요.')
+      res.json(store.transaction(() => merchantStats(service, req.params.restaurantId, days)))
     } catch (e) { next(e) }
   })
   for (const operation of operations) {

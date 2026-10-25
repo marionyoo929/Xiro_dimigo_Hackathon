@@ -1,10 +1,15 @@
 import { fail, host, id, match, member, now, publicCandidate, publicMenu, publicParty, publicSet, state, distance } from './common.mjs'
 import { conflict, nearbyMenus } from './catalog.mjs'
+import { snapshotCategoryReview } from './customer-stats.mjs'
 
 function setFor(party, kind) { return party.sets.find(s => s.kind === kind.toUpperCase()) || fail(409, 'INVALID_PARTY_STATE', '아직 후보가 생성되지 않았어요.') }
+function validViews(set, me, kind) {
+  const ids = new Set(set.items.map(item => item.id))
+  return [...new Set(me[`${kind}Views`].filter(id => ids.has(id)))]
+}
 function progress(party, me, kind) {
   const set = setFor(party, kind), completed = party.members.filter(m => m[`${kind}Complete`]).length
-  return { candidateSetId: set.id, viewedCount: me[`${kind}Views`].length, totalCount: set.items.length, reviewCompleted: me[`${kind}Complete`], partyCompletedMemberCount: completed, partyMemberCount: party.members.length, allMembersCompleted: completed === party.members.length }
+  return { candidateSetId: set.id, viewedCount: validViews(set, me, kind).length, totalCount: set.items.length, reviewCompleted: me[`${kind}Complete`], partyCompletedMemberCount: completed, partyMemberCount: party.members.length, allMembersCompleted: completed === party.members.length }
 }
 function candidate(party, req, kind) {
   const set = setFor(party, kind), c = set.items.find(c => c.id === req.params.candidateId)
@@ -62,7 +67,7 @@ function runJob(service, jobId) {
     for (const r of restaurants) {
       const group = menus.filter(m => m.restaurantId === r.id && categories.has(m.categoryId) && !conflict(m, restrictions))
       if (!group.length) continue
-      set.items.push({ id: id(), candidateSetId: set.id, restaurant: { id: r.id, name: r.name, location: { ...r.location, address: r.address }, distanceMeters: Math.round(distance(p.location, r.location)), imageUrl: null }, representativeMenus: group.slice().sort((a, b) => Number(b.isRepresentative) - Number(a.isRepresentative)).slice(0, 3).map(m => ({ menuId: m.id, name: m.name, price: m.price, imageUrl: m.imageUrls[0] || null })), matchingCategoryIds: [...new Set(group.map(m => m.categoryId))], eliminators: [] })
+      set.items.push({ id: id(), candidateSetId: set.id, restaurant: { id: r.id, name: r.name, location: { ...r.location, address: r.address }, distanceMeters: Math.round(distance(p.location, r.location)), imageUrl: r.imageUrl || null }, representativeMenus: group.slice().sort((a, b) => Number(b.isRepresentative) - Number(a.isRepresentative)).slice(0, 3).map(m => ({ menuId: m.id, name: m.name, price: m.price, imageUrl: m.imageUrls[0] || null })), matchingCategoryIds: [...new Set(group.map(m => m.categoryId))], eliminators: [] })
     }
   }
   j.completedAt = now()
@@ -78,7 +83,8 @@ function list(req, kind) { const p = this.party(req.params.partyId, req.user), s
 function detail(req, kind) { const p = this.party(req.params.partyId, req.user), { c, me } = candidate(p, req, kind); return publicCandidate(c, me) }
 function view(req, kind) {
   const p = this.party(req.params.partyId, req.user); state(p, `${kind.toUpperCase()}_REVIEW`)
-  const { c, me, set } = candidate(p, req, kind), views = me[`${kind}Views`]
+  const { c, me, set } = candidate(p, req, kind), views = validViews(set, me, kind)
+  me[`${kind}Views`] = views
   if (!views.includes(c.id)) { views.push(c.id); this.put('party', p); this.analysis('CANDIDATE_EXPOSED', c.id, req.user.id); this.event(`party:${p.id}`, `${kind}.viewed`, p, { candidateId: c.id }, req.user.id) }
   return { candidateId: c.id, candidateSetId: set.id, viewedByMe: true, viewedCount: views.length, totalCount: set.items.length }
 }
@@ -102,7 +108,7 @@ function elimination(req, kind, restore = false) {
 function complete(req, kind, reopen = false) {
   const p = this.party(req.params.partyId, req.user); state(p, `${kind.toUpperCase()}_REVIEW`)
   const me = member(p, req.user), set = setFor(p, kind)
-  if (!reopen && me[`${kind}Views`].length !== set.items.length) fail(409, 'REVIEW_NOT_COMPLETED', '모든 후보를 확인해 주세요.')
+  if (!reopen && validViews(set, me, kind).length !== set.items.length) fail(409, 'REVIEW_NOT_COMPLETED', '모든 후보를 확인해 주세요.')
   if (me[`${kind}Complete`] === reopen) { me[`${kind}Complete`] = !reopen; this.partyChanged(p, `${kind}.review_${reopen ? 'reopened' : 'completed'}`, { memberId: me.id }) }
   return progress(p, me, kind)
 }
@@ -113,6 +119,7 @@ function finalize(req, kind) {
   const set = setFor(p, kind)
   if (!set.items.some(c => !c.eliminators.length)) fail(409, 'NO_ACTIVE_CANDIDATES', '남은 후보가 없어요. 본인이 소거한 후보를 복구해 주세요.')
   set.finalized = true; p.state = `${kind.toUpperCase()}_FINALIZED`; this.partyChanged(p)
+  if (kind === 'category') snapshotCategoryReview(this, set)
   set.items.filter(c => !c.eliminators.length).forEach(c => this.analysis(`${kind.toUpperCase()}_SURVIVED`, c.id))
   return publicParty(p, req.user)
 }

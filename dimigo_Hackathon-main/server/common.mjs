@@ -24,8 +24,8 @@ export function distance(a, b) {
   return 6371000 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(Math.max(0, 1 - h)))
 }
 export const publicUser = ({ id, displayName, principalType, roles }) => ({ id, displayName, principalType, roles })
-export const publicRestaurant = ({ ownerId: _owner, ...value }) => value
-export const publicMenu = ({ deleted: _deleted, ...value }) => value
+export const publicRestaurant = ({ ownerId: _owner, catalogRetired: _retired, source: _source, imageUrl: _image, locationCorrection: _correction, ...value }) => value
+export const publicMenu = ({ deleted: _deleted, catalogRetired: _retired, source: _source, ...value }) => value
 export function publicMember(m) {
   return { id: m.id, displayName: m.displayName, role: m.role, connectionStatus: m.online ? 'ONLINE' : 'OFFLINE', restrictionConfirmed: m.restrictionConfirmed,
     categoryReviewStatus: m.categoryComplete ? 'COMPLETED' : m.categoryViews?.length ? 'IN_PROGRESS' : 'NOT_STARTED',

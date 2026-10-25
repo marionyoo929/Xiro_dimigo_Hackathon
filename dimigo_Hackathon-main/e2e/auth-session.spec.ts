@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { completeProfile } from './helpers/profile'
 
 test('first login, stored session refresh, logout and login again', async ({ page }) => {
   const responses: { path: string; status: number; hasBody: boolean }[] = []
@@ -12,6 +13,7 @@ test('first login, stored session refresh, logout and login again', async ({ pag
   await page.getByRole('button', { name: '이메일로 로그인하기' }).click()
   await page.getByLabel('닉네임', { exact: true }).fill('세션 검증')
   await page.getByRole('button', { name: '시작하기', exact: true }).click()
+  await completeProfile(page)
   await expect(page.getByRole('button', { name: '＋ 파티 만들기' })).toBeVisible()
   await expect.poll(() => responses.some(item => item.path === '/api/dev/login-codes' && item.status === 200 && item.hasBody)).toBe(true)
   await expect.poll(() => responses.some(item => item.path === '/api/v1/auth/login' && item.status === 200 && item.hasBody)).toBe(true)
@@ -36,6 +38,7 @@ test('first login, stored session refresh, logout and login again', async ({ pag
   await page.getByRole('button', { name: '이메일로 로그인하기' }).click()
   await page.getByLabel('닉네임', { exact: true }).fill('재로그인')
   await page.getByRole('button', { name: '시작하기', exact: true }).click()
+  await completeProfile(page)
   await expect(page.getByRole('button', { name: '＋ 파티 만들기' })).toBeVisible()
 })
 
@@ -60,6 +63,7 @@ test('empty health and saved-session responses never appear as a successful logi
   await page.getByRole('button', { name: '이메일로 로그인하기' }).click()
   await page.getByLabel('닉네임', { exact: true }).fill('재접속 검증')
   await page.getByRole('button', { name: '시작하기', exact: true }).click()
+  await completeProfile(page)
   await expect(page.getByRole('button', { name: '＋ 파티 만들기' })).toBeVisible()
 
   await page.route('**/api/v1/me', route => route.fulfill({ status: 500, body: '' }))

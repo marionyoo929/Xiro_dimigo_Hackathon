@@ -1,0 +1,1967 @@
+{
+  "revision": "ansan-jungang-2026-10-25-v1",
+  "verifiedAt": "2026-10-25",
+  "categories": [
+    {
+      "id": "pork-belly",
+      "name": "삼겹살",
+      "imageUrl": null
+    },
+    {
+      "id": "pork-neck",
+      "name": "목살",
+      "imageUrl": null
+    },
+    {
+      "id": "pork-special",
+      "name": "돼지고기",
+      "imageUrl": null
+    },
+    {
+      "id": "beef-brisket",
+      "name": "차돌박이",
+      "imageUrl": null
+    },
+    {
+      "id": "rice-burger",
+      "name": "밥버거",
+      "imageUrl": "https://www.bongousse.co.kr/images/menu/100051.png",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/24179146#menuInfo",
+        "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지"
+      }
+    },
+    {
+      "id": "steak",
+      "name": "스테이크",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FEF61014D244B4E889EAB4FC824888C8A",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "pasta",
+      "name": "파스타",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F3FA1BA64188A47A49F6AD05ED0045A11",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "risotto",
+      "name": "리조또",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F40660F74D19548B0B7EA923195BD64A9",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "salad",
+      "name": "샐러드",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FBF543D4BB803423B8C6BE53751D0D607",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "soup",
+      "name": "수프",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F9A775D4912B64D77B9BE6E311D862F37",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "ramen",
+      "name": "라멘",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fplace%2F7A29D8195D6B4431B7415E473C60B038",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 매장 배달 메뉴의 같은 이름 사진"
+      }
+    },
+    {
+      "id": "tonkatsu",
+      "name": "돈가스",
+      "imageUrl": null
+    },
+    {
+      "id": "curry",
+      "name": "카레",
+      "imageUrl": null
+    },
+    {
+      "id": "stir-fried-udon",
+      "name": "볶음우동",
+      "imageUrl": null
+    },
+    {
+      "id": "hamburg-steak",
+      "name": "함박스테이크",
+      "imageUrl": null
+    },
+    {
+      "id": "soba",
+      "name": "모밀",
+      "imageUrl": null
+    },
+    {
+      "id": "udon",
+      "name": "우동",
+      "imageUrl": null
+    },
+    {
+      "id": "rice",
+      "name": "볶음밥",
+      "imageUrl": null
+    },
+    {
+      "id": "omurice",
+      "name": "오므라이스",
+      "imageUrl": null
+    },
+    {
+      "id": "shabu-shabu",
+      "name": "샤브샤브",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F0C7C6AE6C0B94FB480740D3BA9B3D457",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "dakgalbi",
+      "name": "닭갈비",
+      "imageUrl": null
+    },
+    {
+      "id": "beef-ribs",
+      "name": "소갈비살",
+      "imageUrl": null
+    },
+    {
+      "id": "budae-stew",
+      "name": "부대찌개",
+      "imageUrl": null
+    },
+    {
+      "id": "naengmyeon",
+      "name": "냉면",
+      "imageUrl": null
+    },
+    {
+      "id": "kimchi-stew",
+      "name": "김치찌개",
+      "imageUrl": null
+    },
+    {
+      "id": "braised-chicken",
+      "name": "닭볶음탕",
+      "imageUrl": null
+    },
+    {
+      "id": "makguksu",
+      "name": "막국수",
+      "imageUrl": null
+    },
+    {
+      "id": "galbi-soup",
+      "name": "갈비탕",
+      "imageUrl": null
+    },
+    {
+      "id": "duck-bulgogi",
+      "name": "오리주물럭",
+      "imageUrl": null
+    },
+    {
+      "id": "spicy",
+      "name": "아부라소바",
+      "imageUrl": null
+    }
+  ],
+  "restaurants": [
+    {
+      "id": "kakao-589846825",
+      "name": "포크너",
+      "address": "경기 안산시 단원구 예술대학로 11 해남빌딩 112호",
+      "location": {
+        "latitude": 37.318107001,
+        "longitude": 126.836537927
+      },
+      "phone": "031-401-4752",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FE0AAAE4D1C284C6885345ECE4517AD34",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "589846825",
+        "url": "https://place.map.kakao.com/589846825",
+        "verifiedAt": "2026-10-25",
+        "coordinateSource": "https://map.kakao.com/?map_type=TYPE_MAP&q=%ED%8F%AC%ED%81%AC%EB%84%88+%EC%95%88%EC%82%B0&hId=589846825&mode=place&urlLevel=3&urlX=463777&urlY=1060823"
+      }
+    },
+    {
+      "id": "kakao-712291276",
+      "name": "히또시",
+      "address": "경기 안산시 단원구 광덕4로 246 126호",
+      "location": {
+        "latitude": 37.31419372,
+        "longitude": 126.839763758
+      },
+      "phone": "031-411-3982",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F1970254ad8501598cf5715d529ba6eca15ab6558%3Foriginal",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "712291276",
+        "url": "https://place.map.kakao.com/712291276",
+        "verifiedAt": "2026-10-25",
+        "coordinateSource": "https://map.kakao.com/?map_type=TYPE_MAP&q=%ED%9E%88%EB%98%90%EC%8B%9C+%EC%95%88%EC%82%B0&hId=712291276&mode=place&urlLevel=3&urlX=464490&urlY=1059736"
+      }
+    },
+    {
+      "id": "kakao-1325696737",
+      "name": "30센치옛날수제왕돈가스",
+      "address": "경기 안산시 단원구 예술대학로 17 중앙노블레스 B동 221호",
+      "location": {
+        "latitude": 37.318683617,
+        "longitude": 126.836505089
+      },
+      "phone": "031-410-0908",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=https%3A%2F%2Fpostfiles.pstatic.net%2FMjAyNTA3MTJfMjcz%2FMDAxNzUyMzIxMTM2NDg4.ziPlsBCmeTeSQ9Jds-i4q-LtiR2CMAlYwzF7QWpdKBsg.lHu8aQU5lMHTEKlickOvYRZ5eD_XfZH3KLtoNMjfXgsg.JPEG%2Foutput%25EF%25BC%25BF981940050.jpg%3Ftype%3Dw773",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "1325696737",
+        "url": "https://place.map.kakao.com/1325696737",
+        "verifiedAt": "2026-10-25",
+        "coordinateSource": "https://map.kakao.com/?map_type=TYPE_MAP&q=30%EC%84%BC%EC%B9%98%EC%98%9B%EB%82%A0%EC%88%98%EC%A0%9C%EC%99%95%EB%8F%88%EA%B0%80%EC%8A%A4&hId=1325696737&mode=place&urlLevel=3&urlX=463770&urlY=1060983"
+      }
+    },
+    {
+      "id": "kakao-395041368",
+      "name": "소담촌 안산중앙역점",
+      "address": "경기 안산시 단원구 고잔1길 16 중앙마케이트빌딩 6층 601~604호",
+      "location": {
+        "latitude": 37.318014989,
+        "longitude": 126.835161767
+      },
+      "phone": "031-405-1611",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F69E99BB5B9FB4B63A5D5EE6A7FA27BA7",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "395041368",
+        "url": "https://place.map.kakao.com/395041368",
+        "verifiedAt": "2026-10-25",
+        "coordinateSource": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EC%86%8C%EB%8B%B4%EC%B4%8C+%EC%95%88%EC%82%B0%EC%A4%91%EC%95%99%EC%97%AD%EC%A0%90&hId=395041368&mode=place&urlLevel=3&urlX=463472&urlY=1060798"
+      }
+    },
+    {
+      "id": "kakao-16311884",
+      "name": "춘천명물닭갈비막국수",
+      "address": "경기 안산시 단원구 고잔2길 38 1층",
+      "location": {
+        "latitude": 37.317564901,
+        "longitude": 126.835469609
+      },
+      "phone": "",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C544x408.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Flocal%2FkakaomapPhoto%2Freview%2F8ae3479a69b69035ce29cf7d1d2907f22a1e290f%3Foriginal",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "16311884",
+        "url": "https://place.map.kakao.com/16311884",
+        "verifiedAt": "2026-10-25",
+        "coordinateSource": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EC%B6%98%EC%B2%9C%EB%AA%85%EB%AC%BC%EB%8B%AD%EA%B0%88%EB%B9%84%EB%A7%89%EA%B5%AD%EC%88%98+%EC%95%88%EC%82%B0&hId=16311884&mode=place&urlLevel=3&urlX=463540&urlY=1060673"
+      }
+    },
+    {
+      "id": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "삼겹식당 안산중앙역점",
+      "address": "경기 안산시 단원구 중앙대로 929 안산중앙리베로 오피스텔 1층 104~106호",
+      "phone": "031-365-3838",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C800x800.q50/?fname=https%3A%2F%2Fpostfiles.pstatic.net%2FMjAyNjAyMjVfMjk1%2FMDAxNzcxOTY5MzQzNzA5.N_UtMfNFdxIpIEU_G8OdFLuHZ7ktdWcPSQULu8XVqWgg.HRWpC6ROS-T_2ZLoOp9DX2h02edYu-q1MUBFpBq8wEEg.JPEG%2F900%25EF%25BC%25BF1771969340147.jpg%3Ftype%3Dw580",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "1820403342",
+        "url": "https://place.map.kakao.com/1820403342",
+        "menuUrl": "https://place.map.kakao.com/1820403342#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "mapName": "삼겹식당 중앙역",
+        "imageSourceUrl": "https://place.map.kakao.com/1820403342#photoview",
+        "imageNote": "카카오맵 음식 사진 탭에서 확인한 해당 매장의 고기 접시 사진. 특정 단품 전용 사진으로 배정하지 않음.",
+        "coordinateSource": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EC%82%BC%EA%B2%B9%EC%8B%9D%EB%8B%B9&hId=1820403342&mode=place&urlLevel=3&urlX=464535&urlY=1060541",
+        "locationCorrection": {
+          "previousAddress": "경기 안산시 단원구 민속공원로 85",
+          "previousPlaceAtAddress": "중앙돈 중앙역점",
+          "previousPlaceUrl": "https://place.map.kakao.com/1432731549",
+          "verifiedAddress": "경기 안산시 단원구 중앙대로 929 안산중앙리베로 오피스텔 1층 104~106호"
+        }
+      },
+      "location": {
+        "latitude": 37.317095314,
+        "longitude": 126.839960665
+      }
+    },
+    {
+      "id": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "봉구스밥버거 중앙역점",
+      "address": "경기 안산시 단원구 중앙대로 921 동서코아 1층 124호",
+      "phone": "031-481-8988",
+      "imageUrl": "https://www.bongousse.co.kr/images/menu/100051.png",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "24179146",
+        "url": "https://place.map.kakao.com/24179146",
+        "menuUrl": "https://place.map.kakao.com/24179146#menuInfo",
+        "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp",
+        "verifiedAt": "2026-10-25",
+        "coordinateSource": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EB%B4%89%EA%B5%AC%EC%8A%A4%EB%B0%A5%EB%B2%84%EA%B1%B0+%EC%A4%91%EC%95%99%EC%97%AD%EC%A0%90&hId=24179146&mode=place&urlLevel=3&urlX=464355&urlY=1060501"
+      },
+      "location": {
+        "latitude": 37.316950048,
+        "longitude": 126.839148708
+      }
+    }
+  ],
+  "menus": [
+    {
+      "id": "kakao-589846825-menu-01",
+      "restaurantId": "kakao-589846825",
+      "name": "살치살 스테이크(270G)",
+      "description": "",
+      "price": 39000,
+      "categoryId": "steak",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FEF61014D244B4E889EAB4FC824888C8A"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-02",
+      "restaurantId": "kakao-589846825",
+      "name": "바질 페스토 파스타(season)",
+      "description": "",
+      "price": 19000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F3FA1BA64188A47A49F6AD05ED0045A11"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-03",
+      "restaurantId": "kakao-589846825",
+      "name": "명란 크림 파스타",
+      "description": "",
+      "price": 18000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F88F4A60CD9EE425682E03468A264B120"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-04",
+      "restaurantId": "kakao-589846825",
+      "name": "스파이시 치킨 리조또",
+      "description": "",
+      "price": 19000,
+      "categoryId": "risotto",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F40660F74D19548B0B7EA923195BD64A9"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-05",
+      "restaurantId": "kakao-589846825",
+      "name": "클래식 까르보나라",
+      "description": "",
+      "price": 17000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FB6EC9B58429044A2A0FB5C52EC806334"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-06",
+      "restaurantId": "kakao-589846825",
+      "name": "봉골레 파스타",
+      "description": "",
+      "price": 18000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FEF629D3174DB4C988ABDEDE9A601DD8A"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-07",
+      "restaurantId": "kakao-589846825",
+      "name": "통베이컨 토마토 파스타",
+      "description": "",
+      "price": 18000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F8F56B916689D4B6585787AF486755534"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-08",
+      "restaurantId": "kakao-589846825",
+      "name": "라구 파스타(바게트2pcs)",
+      "description": "",
+      "price": 19000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F03A8C7EEB981409BB9231B234D408EA0"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-09",
+      "restaurantId": "kakao-589846825",
+      "name": "쉬림프 먹물 파스타",
+      "description": "",
+      "price": 21000,
+      "categoryId": "pasta",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F536BD8D986AA4F42BAD3989CE959B93F"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-10",
+      "restaurantId": "kakao-589846825",
+      "name": "부채살 스테이크(240G)",
+      "description": "",
+      "price": 29000,
+      "categoryId": "steak",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FC2747B08095645968A512321A797EED2"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-11",
+      "restaurantId": "kakao-589846825",
+      "name": "스테이크 토마토 리조또",
+      "description": "",
+      "price": 18000,
+      "categoryId": "risotto",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F71D94AC3FCD44D469B52C267A9301C5D"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-12",
+      "restaurantId": "kakao-589846825",
+      "name": "오징어 먹물 리조또",
+      "description": "",
+      "price": 19000,
+      "categoryId": "risotto",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FDACBB58E709F47F8994429A2765C8FE8"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-13",
+      "restaurantId": "kakao-589846825",
+      "name": "포크너 샐러드",
+      "description": "",
+      "price": 14000,
+      "categoryId": "salad",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FBF543D4BB803423B8C6BE53751D0D607"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-14",
+      "restaurantId": "kakao-589846825",
+      "name": "아보카도 샐러드",
+      "description": "",
+      "price": 16000,
+      "categoryId": "salad",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FB83BAC7AD8CE46828C0B558BE21D546D"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-15",
+      "restaurantId": "kakao-589846825",
+      "name": "호밀 바게트 추가(4pcs)",
+      "description": "",
+      "price": 3000,
+      "categoryId": null,
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FC0C00F2D51D840AF9855A125DBE06234"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-589846825-menu-16",
+      "restaurantId": "kakao-589846825",
+      "name": "단호박 스프(바게트2pcs)",
+      "description": "",
+      "price": 12000,
+      "categoryId": "soup",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F9A775D4912B64D77B9BE6E311D862F37"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/589846825#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-01",
+      "restaurantId": "kakao-712291276",
+      "name": "히포시라멘",
+      "description": "",
+      "price": 9000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-02",
+      "restaurantId": "kakao-712291276",
+      "name": "로스까스",
+      "description": "",
+      "price": 9000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-03",
+      "restaurantId": "kakao-712291276",
+      "name": "미소라멘",
+      "description": "",
+      "price": 8000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fplace%2F7A29D8195D6B4431B7415E473C60B038"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 매장 배달 메뉴의 같은 이름 사진"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-04",
+      "restaurantId": "kakao-712291276",
+      "name": "차슈라멘",
+      "description": "",
+      "price": 11000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-05",
+      "restaurantId": "kakao-712291276",
+      "name": "생선까스",
+      "description": "",
+      "price": 11000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-06",
+      "restaurantId": "kakao-712291276",
+      "name": "돈꼬츠라멘",
+      "description": "",
+      "price": 8000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fplace%2F28C9FF7F470541A6AB602F5EBD5C86E9"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 매장 배달 메뉴의 같은 이름 사진"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-07",
+      "restaurantId": "kakao-712291276",
+      "name": "시오라멘",
+      "description": "",
+      "price": 8000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fplace%2FA2292D96CF1C4929A569B5B773E069C4"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 매장 배달 메뉴의 같은 이름 사진"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-08",
+      "restaurantId": "kakao-712291276",
+      "name": "탄탄언",
+      "description": "",
+      "price": 8000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-09",
+      "restaurantId": "kakao-712291276",
+      "name": "돈카츠라멘",
+      "description": "",
+      "price": 11000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-10",
+      "restaurantId": "kakao-712291276",
+      "name": "크림돈꼬츠라멘",
+      "description": "",
+      "price": 9000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-11",
+      "restaurantId": "kakao-712291276",
+      "name": "냉라멘",
+      "description": "",
+      "price": 9000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-12",
+      "restaurantId": "kakao-712291276",
+      "name": "히레까스",
+      "description": "",
+      "price": 9000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-13",
+      "restaurantId": "kakao-712291276",
+      "name": "치킨까스",
+      "description": "",
+      "price": 10000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-14",
+      "restaurantId": "kakao-712291276",
+      "name": "매운돈까스",
+      "description": "",
+      "price": 9000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-15",
+      "restaurantId": "kakao-712291276",
+      "name": "치즈돈까스",
+      "description": "",
+      "price": 12000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-16",
+      "restaurantId": "kakao-712291276",
+      "name": "돈꼬츠소유라멘",
+      "description": "",
+      "price": 8000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-17",
+      "restaurantId": "kakao-712291276",
+      "name": "바이탕라멘",
+      "description": "",
+      "price": 9000,
+      "categoryId": "ramen",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-18",
+      "restaurantId": "kakao-712291276",
+      "name": "모듬까스",
+      "description": "",
+      "price": 11000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-712291276-menu-19",
+      "restaurantId": "kakao-712291276",
+      "name": "까츠카레",
+      "description": "",
+      "price": 12000,
+      "categoryId": "curry",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/712291276#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-01",
+      "restaurantId": "kakao-1325696737",
+      "name": "옛날 왕 돈까스",
+      "description": "",
+      "price": 9000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-02",
+      "restaurantId": "kakao-1325696737",
+      "name": "30cm 특대 돈까스",
+      "description": "",
+      "price": 11000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-03",
+      "restaurantId": "kakao-1325696737",
+      "name": "해물볶음우동",
+      "description": "",
+      "price": 9500,
+      "categoryId": "stir-fried-udon",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-04",
+      "restaurantId": "kakao-1325696737",
+      "name": "도전 돈까스",
+      "description": "",
+      "price": 21000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-05",
+      "restaurantId": "kakao-1325696737",
+      "name": "생선까스",
+      "description": "",
+      "price": 9000,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-06",
+      "restaurantId": "kakao-1325696737",
+      "name": "함박스테이크",
+      "description": "",
+      "price": 9000,
+      "categoryId": "hamburg-steak",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-07",
+      "restaurantId": "kakao-1325696737",
+      "name": "안심 왕까스",
+      "description": "",
+      "price": 9500,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-08",
+      "restaurantId": "kakao-1325696737",
+      "name": "치즈 왕까스",
+      "description": "",
+      "price": 9500,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-09",
+      "restaurantId": "kakao-1325696737",
+      "name": "모듬정식",
+      "description": "",
+      "price": 9500,
+      "categoryId": "tonkatsu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-10",
+      "restaurantId": "kakao-1325696737",
+      "name": "냉모밀(계절음식)",
+      "description": "",
+      "price": 8000,
+      "categoryId": "soba",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-11",
+      "restaurantId": "kakao-1325696737",
+      "name": "우동",
+      "description": "",
+      "price": 7000,
+      "categoryId": "udon",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-12",
+      "restaurantId": "kakao-1325696737",
+      "name": "김치볶음밥",
+      "description": "",
+      "price": 8000,
+      "categoryId": "rice",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-13",
+      "restaurantId": "kakao-1325696737",
+      "name": "오므라이스",
+      "description": "",
+      "price": 8000,
+      "categoryId": "omurice",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-1325696737-menu-14",
+      "restaurantId": "kakao-1325696737",
+      "name": "김치오므라이스",
+      "description": "",
+      "price": 8000,
+      "categoryId": "omurice",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1325696737#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-01",
+      "restaurantId": "kakao-395041368",
+      "name": "[점심특선] 월남쌈 샤브 정식",
+      "description": "",
+      "price": 15900,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F0C7C6AE6C0B94FB480740D3BA9B3D457"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-02",
+      "restaurantId": "kakao-395041368",
+      "name": "월남쌈 버섯 샤브",
+      "description": "",
+      "price": 23900,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F091C9EC1A9014A9D924046A481C96F5C"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-03",
+      "restaurantId": "kakao-395041368",
+      "name": "월남쌈 스페셜 샤브",
+      "description": "",
+      "price": 28000,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FF9E05AA2DD1445D585E0F531E355FA21"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-04",
+      "restaurantId": "kakao-395041368",
+      "name": "얼큰 미나리 샤브",
+      "description": "",
+      "price": 19900,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FBB156853BDF14CAEA0ECC6AAEE0C0800"
+      ],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-05",
+      "restaurantId": "kakao-395041368",
+      "name": "[점심특선] 월남쌈 버섯 샤브 정식",
+      "description": "",
+      "price": 17500,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F5A5EF137AA52438F98E9381C27E563C2"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-06",
+      "restaurantId": "kakao-395041368",
+      "name": "[점심특선] 월날쌈 와규 샤브 정식",
+      "description": "",
+      "price": 17000,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FFF08A7C895A04E9C91E806F051EEB1F5"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-07",
+      "restaurantId": "kakao-395041368",
+      "name": "[점심특선] 명품 한우 샤브 정식",
+      "description": "",
+      "price": 20000,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F26D7436EC1E54C8E9B361A230CAFEC63"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-08",
+      "restaurantId": "kakao-395041368",
+      "name": "[점심특선] 월남쌈 해물 샤브 정식",
+      "description": "",
+      "price": 18900,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FC50BC5B6AB434263BD619F15332767B5"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-09",
+      "restaurantId": "kakao-395041368",
+      "name": "[점심특선] 얼큰 미나리 샤브 정식",
+      "description": "",
+      "price": 17900,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FEB2A2FCE96C44E01B9CCFF643171AEF1"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-10",
+      "restaurantId": "kakao-395041368",
+      "name": "월남쌈 샤브",
+      "description": "",
+      "price": 18900,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F929EB813008C4939AD720FC575D4E3F6"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-11",
+      "restaurantId": "kakao-395041368",
+      "name": "월남쌈 와규 샤브",
+      "description": "",
+      "price": 23000,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FC0C109D3884C4B6192814CD2BC1D2C3B"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-12",
+      "restaurantId": "kakao-395041368",
+      "name": "명품 한우 샤브",
+      "description": "",
+      "price": 26500,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FE9106D8A6C474843A2EA0DE111244F9E"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-13",
+      "restaurantId": "kakao-395041368",
+      "name": "우삼겹 구이 & 샤브",
+      "description": "",
+      "price": 21000,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F905B96B1160144EF88DB8451263D142C"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-14",
+      "restaurantId": "kakao-395041368",
+      "name": "돈삽겹 구이 & 샤브",
+      "description": "",
+      "price": 22000,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2F11E153EA33774A819548594F49FB3F08"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-395041368-menu-15",
+      "restaurantId": "kakao-395041368",
+      "name": "한우 우삽겹 구이 & 샤브",
+      "description": "",
+      "price": 23900,
+      "categoryId": "shabu-shabu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [
+        "https://img1.kakaocdn.net/cthumb/local/C224x224.q50/?fname=http%3A%2F%2Ft1.kakaocdn.net%2Fmystore%2FBBCA93FC91F442E08A967E920511383D"
+      ],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/395041368#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-01",
+      "restaurantId": "kakao-16311884",
+      "name": "닭갈비 (220g)",
+      "description": "",
+      "price": 17500,
+      "categoryId": "dakgalbi",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-02",
+      "restaurantId": "kakao-16311884",
+      "name": "생삼겹살 (180g)",
+      "description": "",
+      "price": 17500,
+      "categoryId": "pork-belly",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-03",
+      "restaurantId": "kakao-16311884",
+      "name": "소갈비살 (200g)",
+      "description": "",
+      "price": 21000,
+      "categoryId": "beef-ribs",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-04",
+      "restaurantId": "kakao-16311884",
+      "name": "부대찌개 (소)",
+      "description": "",
+      "price": 26000,
+      "categoryId": "budae-stew",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": true,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-05",
+      "restaurantId": "kakao-16311884",
+      "name": "냉면",
+      "description": "",
+      "price": 7500,
+      "categoryId": "naengmyeon",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-06",
+      "restaurantId": "kakao-16311884",
+      "name": "김치찌개 (소)",
+      "description": "",
+      "price": 25000,
+      "categoryId": "kimchi-stew",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-07",
+      "restaurantId": "kakao-16311884",
+      "name": "토종닭도리탕 (중)",
+      "description": "",
+      "price": 49000,
+      "categoryId": "braised-chicken",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-08",
+      "restaurantId": "kakao-16311884",
+      "name": "토종닭도리탕 (대)",
+      "description": "",
+      "price": 55000,
+      "categoryId": "braised-chicken",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-09",
+      "restaurantId": "kakao-16311884",
+      "name": "냉면/막국수",
+      "description": "",
+      "price": 9000,
+      "categoryId": "makguksu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-10",
+      "restaurantId": "kakao-16311884",
+      "name": "왕갈비탕",
+      "description": "",
+      "price": 16000,
+      "categoryId": "galbi-soup",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-11",
+      "restaurantId": "kakao-16311884",
+      "name": "오리주물럭",
+      "description": "",
+      "price": 18000,
+      "categoryId": "duck-bulgogi",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-12",
+      "restaurantId": "kakao-16311884",
+      "name": "부대찌개 (중)",
+      "description": "",
+      "price": 36000,
+      "categoryId": "budae-stew",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-13",
+      "restaurantId": "kakao-16311884",
+      "name": "부대찌개 (대)",
+      "description": "",
+      "price": 44000,
+      "categoryId": "budae-stew",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-14",
+      "restaurantId": "kakao-16311884",
+      "name": "김치찌개 (중)",
+      "description": "",
+      "price": 37000,
+      "categoryId": "kimchi-stew",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-15",
+      "restaurantId": "kakao-16311884",
+      "name": "김치찌개 (대)",
+      "description": "",
+      "price": 44000,
+      "categoryId": "kimchi-stew",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "id": "kakao-16311884-menu-16",
+      "restaurantId": "kakao-16311884",
+      "name": "쟁반막국수",
+      "description": "",
+      "price": 19000,
+      "categoryId": "makguksu",
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "imageUrls": [],
+      "isRepresentative": false,
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/16311884#menuInfo",
+        "verifiedAt": "2026-10-25"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "kakao-1820403342-samgyeopsal",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "국내산생삼겹살(180g)",
+      "price": 14000,
+      "categoryId": "pork-belly",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1820403342#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "카카오맵 메뉴별 사진 미등록"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "kakao-1820403342-moksal",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "국내산생목살(180g)",
+      "price": 14000,
+      "categoryId": "pork-neck",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1820403342#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "카카오맵 메뉴별 사진 미등록"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "kakao-1820403342-daepae",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "국내산대패삼겹살(150g)",
+      "price": 12000,
+      "categoryId": "pork-belly",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1820403342#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "카카오맵 메뉴별 사진 미등록"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "kakao-1820403342-jjondeuksal",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "국내산쫀득살(180g)",
+      "price": 14000,
+      "categoryId": "pork-special",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1820403342#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "카카오맵 메뉴별 사진 미등록"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "kakao-1820403342-chadolbagi",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "한우차돌박이(150g)",
+      "price": 22000,
+      "categoryId": "beef-brisket",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/1820403342#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "카카오맵 메뉴별 사진 미등록"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "bongousse-100051",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "봉구스밥버거",
+      "price": 3500,
+      "categoryId": "rice-burger",
+      "imageUrls": [
+        "https://www.bongousse.co.kr/images/menu/100051.png"
+      ],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/24179146#menuInfo",
+        "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "bongousse-100052",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "봉순이밥버거",
+      "price": 4200,
+      "categoryId": "rice-burger",
+      "imageUrls": [
+        "https://www.bongousse.co.kr/images/menu/100052.png"
+      ],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/24179146#menuInfo",
+        "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "bongousse-100053",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "햄밥버거",
+      "price": 4500,
+      "categoryId": "rice-burger",
+      "imageUrls": [
+        "https://www.bongousse.co.kr/images/menu/100053.png"
+      ],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/24179146#menuInfo",
+        "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "bongousse-100054",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "치즈밥버거",
+      "price": 4100,
+      "categoryId": "rice-burger",
+      "imageUrls": [
+        "https://www.bongousse.co.kr/images/menu/100054.png"
+      ],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/24179146#menuInfo",
+        "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지"
+      }
+    },
+    {
+      "description": "",
+      "isRepresentative": true,
+      "id": "bongousse-100055",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "햄치즈밥버거",
+      "price": 5100,
+      "categoryId": "rice-burger",
+      "imageUrls": [
+        "https://www.bongousse.co.kr/images/menu/100055.png"
+      ],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "url": "https://place.map.kakao.com/24179146#menuInfo",
+        "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp",
+        "verifiedAt": "2026-10-25",
+        "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지"
+      }
+    }
+  ]
+}

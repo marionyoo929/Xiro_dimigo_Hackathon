@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { loadKakaoMaps, type MapInstance, type MapsSDK, type PlaceLocation } from '../lib/kakaoMaps'
+import { loadKakaoMaps, type MapInstance, type MapsSDK, type PlaceLocation, type MapMouseEvent } from '../lib/kakaoMaps'
 import { formatRadius } from '../lib/registeredCatalog'
 
 const noPlaces: PlaceLocation[] = []
-export default function PlaceMap({ places = noPlaces, selected, radiusKm, onSelect, onReady }: {
+export default function PlaceMap({ places = noPlaces, selected, radiusKm, onSelect, onReady, onPointPick }: {
   places?: PlaceLocation[]; selected: PlaceLocation | null; radiusKm: number
   onSelect?: (place: PlaceLocation) => void; onReady?: (sdk: MapsSDK | null) => void
+  onPointPick?: (latitude: number, longitude: number) => void
 }) {
   const container = useRef<HTMLDivElement>(null)
   const map = useRef<MapInstance | null>(null)
@@ -13,6 +14,8 @@ export default function PlaceMap({ places = noPlaces, selected, radiusKm, onSele
   const [error, setError] = useState('')
   const [attempt, setAttempt] = useState(0)
   const selectRef = useRef(onSelect)
+  const pointRef = useRef(onPointPick)
+  pointRef.current = onPointPick
   const lastView = useRef<{ placeId: string | null; hadResults: boolean }>({ placeId: null, hadResults: false })
   const fitSelection = useRef<(() => void) | null>(null)
   selectRef.current = onSelect
@@ -35,11 +38,20 @@ export default function PlaceMap({ places = noPlaces, selected, radiusKm, onSele
     return () => { active = false; observer?.disconnect(); map.current = null }
   }, [attempt, onReady])
 
+  const editable = Boolean(onPointPick)
+  useEffect(() => {
+    if (!sdk || !map.current || !editable) return
+    const instance = map.current
+    const pick = (event: MapMouseEvent) => pointRef.current?.(event.latLng.getLat(), event.latLng.getLng())
+    sdk.event.addListener(instance, 'click', pick)
+    return () => sdk.event.removeListener(instance, 'click', pick)
+  }, [sdk, editable])
+
   useEffect(() => {
     if (!sdk || !map.current) return
     const instance = map.current
     const overlays: { setMap(map: MapInstance | null): void }[] = []
-    const listeners: { marker: object; callback: () => void }[] = []
+    const listeners: { marker: object; type: string; callback: () => void }[] = []
     const bounds = new sdk.LatLngBounds()
     for (const place of places) {
       if (selected?.id === place.id) continue
@@ -49,7 +61,7 @@ export default function PlaceMap({ places = noPlaces, selected, radiusKm, onSele
       bounds.extend(position)
       const callback = () => selectRef.current?.(place)
       sdk.event.addListener(marker, 'click', callback)
-      listeners.push({ marker, callback })
+      listeners.push({ marker, type: 'click', callback })
     }
     if (selected) {
       const position = new sdk.LatLng(selected.latitude, selected.longitude)
@@ -58,14 +70,21 @@ export default function PlaceMap({ places = noPlaces, selected, radiusKm, onSele
         strokeWeight: 2, strokeColor: '#ee9397', strokeOpacity: 0.95, strokeStyle: 'shortdash',
         fillColor: '#eea2a5', fillOpacity: 0.18,
       })
-      const pin = document.createElement('div')
-      pin.className = 'meeting-map-pin'
-      pin.setAttribute('role', 'img')
-      pin.setAttribute('aria-label', `${selected.name}, 모임 중심 장소`)
-      overlays.push(circle, new sdk.CustomOverlay({ map: instance, position, content: pin, yAnchor: 1, zIndex: 3 }))
+      overlays.push(circle)
+      if (editable) {
+        const marker = new sdk.Marker({ map: instance, position, title: '드래그해서 약속 장소 지정', draggable: true, zIndex: 3,
+          image: new sdk.MarkerImage(`${import.meta.env.BASE_URL}images/map%20point.png`, new sdk.Size(32, 40), { offset: new sdk.Point(16, 40) }) })
+        const callback = () => { const point = marker.getPosition(); pointRef.current?.(point.getLat(), point.getLng()) }
+        sdk.event.addListener(marker, 'dragend', callback)
+        listeners.push({ marker, type: 'dragend', callback }); overlays.push(marker)
+      } else {
+        const pin = document.createElement('div')
+        pin.className = 'meeting-map-pin'; pin.setAttribute('role', 'img'); pin.setAttribute('aria-label', `${selected.name}, 모임 중심 장소`)
+        overlays.push(new sdk.CustomOverlay({ map: instance, position, content: pin, yAnchor: 1, zIndex: 3 }))
+      }
       fitSelection.current = () => instance.setBounds(circle.getBounds(), 24, 24, 24, 24)
       // Keep zoom fixed when only the radius changes so the circle visibly grows.
-      if (!places.length && (lastView.current.placeId !== selected.id || lastView.current.hadResults)) fitSelection.current()
+      if (!places.length && ((!lastView.current.placeId || lastView.current.placeId !== selected.id && !selected.id.startsWith('picked:')) || lastView.current.hadResults)) fitSelection.current()
     }
     if (places.length) {
       // Include the selected result too when it is part of the current search.
@@ -75,10 +94,10 @@ export default function PlaceMap({ places = noPlaces, selected, radiusKm, onSele
     lastView.current = { placeId: selected?.id || null, hadResults: places.length > 0 }
     return () => {
       fitSelection.current = null
-      listeners.forEach(({ marker, callback }) => sdk.event.removeListener(marker, 'click', callback))
+      listeners.forEach(({ marker, type, callback }) => sdk.event.removeListener(marker, type, callback))
       overlays.forEach(overlay => overlay.setMap(null))
     }
-  }, [sdk, places, selected, radiusKm])
+  }, [sdk, places, selected, radiusKm, editable])
 
   return <div className="place-map-frame">
     <div ref={container} className="place-map" aria-label={selected ? `${selected.name} 중심 반경 ${formatRadius(radiusKm * 1000)} 지도` : '모임 장소 검색 지도'} />

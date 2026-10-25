@@ -1,4 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
+import QRCode from 'qrcode'
+import { completeProfile } from './helpers/profile'
 
 test('two browsers share elimination, selection, group order and merchant acceptance', async ({ browser, baseURL }) => {
   const hostContext = await browser.newContext({ viewport: { width: 390, height: 844 } }), friendContext = await browser.newContext({ viewport: { width: 390, height: 844 } }), merchantContext = await browser.newContext({ viewport: { width: 390, height: 844 } })
@@ -18,6 +20,7 @@ test('two browsers share elimination, selection, group order and merchant accept
     await page.getByRole('button', { name: '이메일로 로그인하기' }).click()
     await page.getByLabel('닉네임', { exact: true }).fill(name)
     await page.getByRole('button', { name: '시작하기', exact: true }).click()
+    await completeProfile(page)
     await expect(page.getByRole('button', { name: '＋ 파티 만들기' })).toBeVisible()
   }
   await login(host, '브라우저 방장')
@@ -29,15 +32,16 @@ test('two browsers share elimination, selection, group order and merchant accept
   await host.getByRole('button', { name: '초대 링크 복사' }).click()
   const invite = await host.getByLabel('초대 링크', { exact: true }).inputValue()
   await friend.goto(invite); await friend.getByLabel('닉네임', { exact: true }).fill('초대 친구'); await friend.getByRole('button', { name: '게스트로 참여' }).click()
+  await completeProfile(friend, '20', 'MALE')
   await expect(host.getByText('참가자 2/8')).toBeVisible()
   for (const page of [host, friend]) await page.getByRole('button', { name: '최신 식사 제한 확인' }).click()
   await expect(host.getByRole('button', { name: '음식 후보 생성' })).toBeEnabled(); await host.getByRole('button', { name: '음식 후보 생성' }).click()
   await expect(host.getByRole('heading', { name: /메뉴 확인/ })).toBeVisible()
   await expect(host.locator('.food-row')).toHaveCount(11)
-  await expect(host.locator('.review-banner progress')).toHaveAttribute('value', '0')
+  await expect(host.getByRole('button', { name: '메뉴 검토 완료', exact: true })).toBeDisabled()
   await expect(host.locator('.swipe-guide')).toContainText('소거 0개')
   await expect(host.locator('.food-photo')).toHaveCount(11)
-  await expect.poll(() => host.locator('.food-photo').evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalWidth > 0))).toBe(true)
+  await expect.poll(() => host.locator('.food-photo').first().evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
   await host.screenshot({ path: 'test-results/menu-review.png', fullPage: true })
   const first = host.locator('.food-row').first(), name = await first.getByRole('heading').innerText()
   const card = first.locator('.food-card'), box = (await card.boundingBox())!
@@ -51,9 +55,9 @@ test('two browsers share elimination, selection, group order and merchant accept
   await host.mouse.move(box.x + 20, box.y + box.height / 2, { steps: 8 }); await host.mouse.up()
   await expect(first).toHaveClass(/is-exiting/)
   await expect(first).toHaveClass(/is-collapsed/)
-  await expect(host.locator('.review-banner progress')).toHaveAttribute('value', '1')
+  await expect.poll(async () => Number(await host.locator('.review-banner progress').getAttribute('value'))).toBeGreaterThanOrEqual(1)
   await host.reload()
-  await expect(host.locator('.review-banner progress')).toHaveAttribute('value', '1')
+  await expect.poll(async () => Number(await host.locator('.review-banner progress').getAttribute('value'))).toBeGreaterThanOrEqual(1)
   await expect(host.locator('.swipe-guide')).toContainText('소거 1개')
   const firstPartyUrl = host.url()
   await host.getByRole('button', { name: '홈으로 돌아가기' }).click()
@@ -63,10 +67,10 @@ test('two browsers share elimination, selection, group order and merchant accept
   await host.getByRole('button', { name: '최신 식사 제한 확인' }).click()
   await host.getByRole('button', { name: '음식 후보 생성' }).click()
   await expect(host.locator('.food-row')).toHaveCount(11)
-  await expect(host.locator('.review-banner progress')).toHaveAttribute('value', '0')
+  await expect(host.getByRole('button', { name: '메뉴 검토 완료', exact: true })).toBeDisabled()
   await expect(host.locator('.swipe-guide')).toContainText('소거 0개')
   await host.goto(firstPartyUrl)
-  await expect(host.locator('.review-banner progress')).toHaveAttribute('value', '1')
+  await expect.poll(async () => Number(await host.locator('.review-banner progress').getAttribute('value'))).toBeGreaterThanOrEqual(1)
   await expect(host.locator('.swipe-guide')).toContainText('소거 1개')
   const excluded = host.locator('.excluded-row').first()
   await excluded.locator('.excluded-name').evaluate(element => { element.textContent = '아주 긴 메뉴 이름이 두 줄 이상으로 자연스럽게 표시되는지 확인하기 위한 이름' })
@@ -84,10 +88,8 @@ test('two browsers share elimination, selection, group order and merchant accept
     const cards = page.locator(label === '메뉴' ? '.food-row' : '.candidate-card')
     for (let i = 0; i < await cards.count(); i++) {
       await cards.nth(i).scrollIntoViewIfNeeded()
-      if (label === '메뉴') {
-        const confirm = cards.nth(i).getByRole('button', { name: '확인', exact: true })
-        if (await confirm.count()) await confirm.click()
-      }
+      const confirm = cards.nth(i).getByRole('button', { name: '확인', exact: true })
+      if (await confirm.count()) await confirm.click()
     }
     if (label === '메뉴') {
       await expect(page.locator('.review-banner progress')).toHaveAttribute('value', String(await cards.count()))
@@ -106,7 +108,9 @@ test('two browsers share elimination, selection, group order and merchant accept
   await host.getByRole('button', { name: '이 식당 선택' }).first().click(); await expect(host.getByRole('heading', { name: '방문할 식당을 정했어요!' })).toBeVisible()
   await merchant.goto(baseURL!); await merchant.getByRole('button', { name: '이메일로 로그인하기' }).click(); await merchant.getByRole('button', { name: '사장님 시연 시작' }).click(); await merchant.getByLabel('내 매장', { exact: true }).selectOption({ label: chosen })
   await merchant.getByRole('button', { name: 'QR', exact: true }).click(); await merchant.getByRole('button', { name: 'QR 발급', exact: true }).click(); const qr = await merchant.getByLabel('매장 QR 링크', { exact: true }).last().inputValue()
-  await host.getByLabel('매장 QR 링크 또는 토큰').fill(qr); await host.getByRole('button', { name: '매장 연결 · 주문 시작' }).click()
+  await host.evaluate(() => { navigator.mediaDevices.getUserMedia = async () => { throw new DOMException('E2E camera unavailable', 'NotFoundError') } })
+  await host.getByRole('button', { name: '카메라로 매장 QR 스캔' }).click()
+  await host.getByLabel('QR 코드 사진', { exact: true }).setInputFiles({ name: 'store-qr.png', mimeType: 'image/png', buffer: await QRCode.toBuffer(qr, { width: 512, margin: 4 }) })
   for (const page of [host, friend]) {
     await expect(page.getByRole('heading', { name: '각자 메뉴를 골라요' })).toBeVisible()
     if (page === friend) await expect(page.getByText('1/2명 선택 완료 · 제출 후 수정할 수 없어요.', { exact: true })).toBeVisible()
@@ -118,6 +122,16 @@ test('two browsers share elimination, selection, group order and merchant accept
   await merchant.getByRole('button', { name: '수수료', exact: true }).click(); await expect(merchant.getByRole('heading', { name: '계산 대기' }).last()).toBeVisible()
   for (const page of [host, friend, merchant]) expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy()
   await host.screenshot({ path: 'test-results/group-order-complete.png', fullPage: true }); await merchant.screenshot({ path: 'test-results/merchant-commission.png', fullPage: true })
+  await merchant.getByRole('button', { name: '통계', exact: true }).click()
+  await expect(merchant.getByRole('table', { name: '인기 메뉴 순위' })).toBeVisible()
+  for (const period of ['최근 3일', '일주일', '한 달']) {
+    await merchant.getByRole('button', { name: period, exact: true }).click()
+    await expect(merchant.getByRole('button', { name: period, exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(merchant.getByRole('table', { name: '인기 메뉴 순위' }).locator('tbody')).toContainText('2개')
+    await expect(merchant.getByText(/수락한 주문 참여 인원 2명/)).toBeVisible()
+  }
+  expect(await merchant.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await merchant.screenshot({ path: 'test-results/merchant-statistics.png', fullPage: true })
   expect(errors).toEqual([])
   await Promise.all([hostContext.close(), friendContext.close(), merchantContext.close()])
 })

@@ -1,10 +1,11 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { partyFoods, type Party } from '../data/sampleParty'
 import { formatRadius } from '../lib/registeredCatalog'
+import CatalogPhoto from '../components/CatalogPhoto'
 
 type Vote = { reviewed: string[]; excluded: string[] }
 type Gesture = { id: string; pointerId: number; x: number; y: number; axis: 'pending' | 'horizontal' | 'vertical'; card: HTMLElement }
-const asset = (name: string) => `${import.meta.env.BASE_URL}images/${encodeURIComponent(name)}`
+const asset = (name: string) => /^https?:\/\//.test(name) ? name : `${import.meta.env.BASE_URL}images/${encodeURIComponent(name)}`
 const voteKey = (partyId: string, participantId: string) => `xiro.party-vote.v1:${encodeURIComponent(partyId)}:${encodeURIComponent(participantId)}`
 function readVote(key: string, ids: string[]): Vote {
   try {
@@ -142,7 +143,7 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
           }}
           onPointerCancel={() => { if (pointer.current?.axis === 'horizontal') resetDrag(pointer.current.card); pointer.current = null }}
         >
-          <img className="food-photo" src={asset(food.image)} alt={food.name} draggable={false} />
+          <CatalogPhoto className="food-photo" src={food.image ? asset(food.image) : null} alt={food.name} />
           <div className="food-info"><h2>{food.name}</h2><p>{food.description}</p><strong>{food.price}</strong><small>{food.detail}</small><div className="food-controls"><span>{excluded ? '소거됨' : reviewed ? '확인 · 후보' : '미확인'}</span>{!reviewed && <button onClick={() => confirm(food.id)}>확인</button>}<button onClick={() => animateEliminate(food.id)}>소거</button></div></div>
           <span className="swipe-handle" aria-hidden="true">❮❮</span>
         </article>

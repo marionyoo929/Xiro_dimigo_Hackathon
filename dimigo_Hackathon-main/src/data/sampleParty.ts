@@ -8,6 +8,8 @@ export interface PartySettings {
   location: PlaceLocation
   radiusKm: number
   budgetMax: number
+  budgetPerPerson?: number | null
+  scheduledAt?: string | null
 }
 
 export interface Party {
@@ -17,6 +19,8 @@ export interface Party {
   location?: PlaceLocation
   radiusKm: number
   budgetMax: number
+  budgetPerPerson?: number | null
+  scheduledAt?: string | null
   candidates: { foodId: string; distanceKm: number; maxPrice: number }[]
   candidateSource?: 'demo' | 'registered'
   registeredCandidates?: RegisteredFoodCandidate[]

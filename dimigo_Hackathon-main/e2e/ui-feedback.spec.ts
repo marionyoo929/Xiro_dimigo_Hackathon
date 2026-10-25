@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { completeProfile } from './helpers/profile'
 
 for (const width of [375, 402]) test(`home, restrictions, place and waiting room at ${width}px`, async ({ browser, baseURL }) => {
   const context = await browser.newContext({ viewport: { width, height: 812 } })
@@ -10,10 +11,17 @@ for (const width of [375, 402]) test(`home, restrictions, place and waiting room
   await page.getByRole('button', { name: '이메일로 로그인하기' }).click()
   await page.getByLabel('닉네임', { exact: true }).fill(`피드백 ${width}`)
   await page.getByRole('button', { name: '시작하기', exact: true }).click()
+  await completeProfile(page)
   await expect(page.locator('.home-screen .welcome-card h1')).toHaveText('싫은 건 빼고,맛있는 것만 남겨요')
   await expect(page.locator('.home-screen .welcome-main img')).toBeVisible()
   await expect(page.locator('.home-create-button')).toHaveCSS('background-color', 'rgb(254, 146, 146)')
   await expect(page.getByText('함께 고르는 즐거움')).toHaveCount(0)
+  const buttonCenter = await page.locator('.home-create-button').evaluate(button => {
+    const label = button.querySelector('span')!.getBoundingClientRect(), bounds = button.getBoundingClientRect()
+    return { x: Math.abs(label.x + label.width / 2 - bounds.x - bounds.width / 2), y: Math.abs(label.y + label.height / 2 - bounds.y - bounds.height / 2) }
+  })
+  expect(buttonCenter.x).toBeLessThan(1)
+  expect(buttonCenter.y).toBeLessThan(1)
   await noHorizontalOverflow()
   const homeBoxes = await Promise.all(['.welcome-main h1', '.welcome-main img'].map(selector => page.locator(selector).boundingBox()))
   expect(homeBoxes[0]!.x + homeBoxes[0]!.width).toBeLessThanOrEqual(homeBoxes[1]!.x)
@@ -33,7 +41,7 @@ for (const width of [375, 402]) test(`home, restrictions, place and waiting room
   await expect(page.getByRole('combobox', { name: '돼지고기 제한 사유' })).toHaveValue('INGREDIENT_AVOIDANCE')
   await page.getByRole('button', { name: /돌아가기/ }).click()
   await page.getByRole('button', { name: '＋ 파티 만들기' }).click()
-  await expect(page.getByText('카카오 지도 JavaScript 키가 설정되지 않았어요.')).toBeVisible()
+  await expect(page.getByText('카카오 지도 JavaScript 키가 설정되지 않았어요.', { exact: false })).toBeVisible()
   await page.getByRole('button', { name: '서울시청', exact: true }).click()
   await expect(page.locator('.selected-place-heading h2')).toHaveText('서울시청')
   await expect(page.locator('.selected-place-heading>span')).toHaveCount(0)

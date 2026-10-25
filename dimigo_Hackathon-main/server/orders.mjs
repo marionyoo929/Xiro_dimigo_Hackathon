@@ -1,5 +1,6 @@
 import { fail, host, id, match, member, missing, now, publicOrder, publicParty, publicMenu, state } from './common.mjs'
 import { conflict, filteredMerchant, merchantRestaurant, qrRestaurant } from './catalog.mjs'
+import { snapshotOrderAudience } from './customer-stats.mjs'
 
 export function getOrder(service, req, merchant = false) {
   const order = service.get('order', req.params.orderId)
@@ -111,6 +112,7 @@ export const orderHandlers = {
     const checked = reprice(this, o)
     if (checked.some((m, n) => m.items.some((i, k) => i.lineAmount !== o.members[n].items[k].lineAmount))) return priceChanged.call(this, o, checked, req.user)
     o.members = checked; o.status = 'SUBMITTED'; o.submittedAt = now()
+    snapshotOrderAudience(this, o)
     if (o.partyId) { const p = this.get('party', o.partyId); state(p, 'ORDERING'); p.state = 'ORDER_SUBMITTED'; this.partyChanged(p) }
     this.orderChanged(o, 'order.submitted'); this.analysis('ORDER_SUBMITTED', o.id, req.user.id); this.audit(req.user, 'order.submit', o, 'DRAFT', req.requestId)
     return publicOrder(o, req.user)

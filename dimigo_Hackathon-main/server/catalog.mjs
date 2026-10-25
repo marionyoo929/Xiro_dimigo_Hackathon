@@ -23,15 +23,17 @@ export function conflict(menu, restrictions) {
   return restrictions.some(r => codes.has(r.targetCode)) ? 'DIETARY_RESTRICTION_CONFLICT' : null
 }
 export function nearbyMenus(service, party) {
-  const restaurants = service.store.all('restaurant').filter(r => distance(party.location, r.location) <= party.searchRadiusMeters)
+  const restaurants = service.store.all('restaurant').filter(r => !r.catalogRetired && distance(party.location, r.location) <= party.searchRadiusMeters)
   const ids = new Set(restaurants.map(r => r.id))
-  const menus = service.store.all('menu').filter(m => ids.has(m.restaurantId) && !m.deleted && m.salesStatus === 'AVAILABLE' && m.categoryId && (party.budgetPerPerson === null || m.price <= party.budgetPerPerson))
+  const menus = service.store.all('menu').filter(m => ids.has(m.restaurantId) && !m.catalogRetired && !m.deleted && m.salesStatus === 'AVAILABLE' && m.categoryId && (party.budgetPerPerson === null || m.price <= party.budgetPerPerson))
   return { restaurants, menus }
 }
 export function qrRestaurant(service, token) {
   const qr = service.store.all('qr').find(q => hash(q.qrToken) === hash(token))
   if (!qr?.active) fail(410, 'QR_EXPIRED', '사용할 수 없는 매장 QR이에요.')
-  return { qr, restaurant: service.get('restaurant', qr.restaurantId) }
+  const restaurant = service.get('restaurant', qr.restaurantId)
+  if (restaurant.catalogRetired) fail(410, 'QR_EXPIRED', '이 매장은 등록 목록에서 제외되어 새 주문을 시작할 수 없어요.')
+  return { qr, restaurant }
 }
 export function filteredMerchant(service, req, kind) {
   if (!req.user.roles.includes('MERCHANT')) fail(403, 'FORBIDDEN', '사업자 계정이 필요해요.')
@@ -41,7 +43,7 @@ export function filteredMerchant(service, req, kind) {
     && (!req.query.status || value.status === req.query.status) && (!req.query.from || value.createdAt >= req.query.from) && (!req.query.to || value.createdAt < req.query.to))
 }
 export const catalogHandlers = {
-  listFoodCategories(req) { return this.page(this.store.all('category'), req) },
+  listFoodCategories(req) { return this.page(this.store.all('category').filter(c => !c.catalogRetired).map(({ catalogRetired: _retired, source: _source, ...category }) => category), req) },
   listIngredients(req) { return this.page(this.store.all('ingredient'), req) },
   listRestrictionTargets(req) { return this.page(this.options.restrictionTargets, req) },
   createMerchantRestaurant(req) {
@@ -51,7 +53,7 @@ export const catalogHandlers = {
   },
   listMerchantRestaurants(req) {
     if (!req.user.roles.includes('MERCHANT')) fail(403, 'FORBIDDEN', '사업자 계정이 필요해요.')
-    return this.page(this.store.all('restaurant').filter(r => r.ownerId === req.user.id).map(publicRestaurant), req)
+    return this.page(this.store.all('restaurant').filter(r => !r.catalogRetired && r.ownerId === req.user.id).map(publicRestaurant), req)
   },
   getMerchantRestaurant(req) { return publicRestaurant(merchantRestaurant(this, req.params.restaurantId, req.user)) },
   updateMerchantRestaurant(req) {
@@ -75,6 +77,7 @@ export const catalogHandlers = {
   deleteMerchantMenu(req) { const menu = this.get('menu', req.params.menuId); merchantRestaurant(this, menu.restaurantId, req.user); this.put('menu', { ...menu, deleted: true, salesStatus: 'HIDDEN', version: menu.version + 1 }); return null },
   createMerchantQrCode(req) {
     const restaurant = merchantRestaurant(this, req.params.restaurantId, req.user), qrToken = secret()
+    if (restaurant.catalogRetired) fail(409, 'STORE_ORDER_DISABLED', '등록 목록에서 제외된 매장은 새 QR을 만들 수 없어요.')
     return this.put('qr', { id: id(), restaurantId: restaurant.id, qrToken, qrUrl: `${this.options.origin}/store/${qrToken}`, active: true, createdAt: now() })
   },
   listMerchantQrCodes(req) { merchantRestaurant(this, req.params.restaurantId, req.user); return this.page(this.store.all('qr').filter(q => q.restaurantId === req.params.restaurantId), req) },

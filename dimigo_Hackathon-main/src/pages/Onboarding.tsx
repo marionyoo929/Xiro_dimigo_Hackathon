@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react'
 const asset = (name: string) => `${import.meta.env.BASE_URL}images/${encodeURIComponent(name)}`
-export default function Onboarding({ demo, localAuth, ready, busy, error, onStart, onLocalLogin, onMerchantDemo }: {
-  demo: boolean; localAuth: boolean; ready: boolean; busy: boolean; error: string
+export default function Onboarding({ demo, localAuth, ready, connectionFailed, onRetryConnection, busy, error, onStart, onLocalLogin, onMerchantDemo }: {
+  demo: boolean; localAuth: boolean; ready: boolean; connectionFailed: boolean; onRetryConnection: () => void; busy: boolean; error: string
   onStart: (name: string) => void; onLocalLogin: (email: string, password: string) => void; onMerchantDemo: () => void
 }) {
   const [input, setInput] = useState('')
@@ -15,7 +15,8 @@ export default function Onboarding({ demo, localAuth, ready, busy, error, onStar
         ['카카오', 'kakao logo.png'], ['Google', 'google logo.png'],
         ['네이버', 'naver logo.png'], ['Apple', 'apple logo.png'],
       ].map(([label, image]) => <button key={label} className="social" aria-label={`${label} 로그인 안내`} onClick={() => setNotice(demo ? '소셜 로그인은 준비 중이에요. 게스트로 시작할 수 있어요.' : '소셜 로그인은 준비 중이에요. 이메일로 로그인해 주세요.')}><img src={asset(image)} alt="" /></button>)}</div>
-      <p className="start-notice" role="status">{error || notice}</p>
+      <p className="start-notice" role="status">{error || notice || (!ready && !connectionFailed ? '서버에 연결하는 중…' : '')}</p>
+      {!ready && connectionFailed && <button className="secondary" disabled={busy} onClick={onRetryConnection}>서버 다시 연결</button>}
       <button className="primary" disabled={!ready || (!demo && !localAuth)} onClick={() => setPanel(true)}>이메일로 로그인하기</button>
       {demo && <button className="guest-link" disabled={busy} onClick={() => onStart('게스트')}>게스트로 시작하기</button>}
     </div>

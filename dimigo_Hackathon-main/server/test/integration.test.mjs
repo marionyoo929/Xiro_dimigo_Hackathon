@@ -1,14 +1,15 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createApp } from '../app.mjs'
 import { operations } from '../contract.mjs'
 import { provisionAccount } from '../local-auth.mjs'
+const demoCatalog = JSON.parse(readFileSync(new URL('./fixtures/catalog.json', import.meta.url), 'utf8'))
 
 async function fixture(t, dbPath) {
-  const instance = createApp({ demo: true, rateLimit: 10000, dbPath })
+  const instance = createApp({ demo: true, demoCatalog, rateLimit: 10000, dbPath })
   const server = instance.app.listen(0, '127.0.0.1'); await new Promise(r => server.once('listening', r))
   const base = `http://127.0.0.1:${server.address().port}/api`
   t.after(async () => { instance.close(); server.closeAllConnections(); await new Promise(r => server.close(r)) })
@@ -262,4 +263,23 @@ test('simultaneous merchant confirm/reject commits only one terminal state and a
   assert.equal(results.filter(r => r.status === 200).length, 1); assert.equal(results.filter(r => [409, 412].includes(r.status)).length, 1)
   const final = await f.request(`/merchant/orders/${o.id}`, { token: m }), fees = (await f.request('/merchant/commissions', { token: m })).items
   assert.equal(fees.length, final.status === 'CONFIRMED' ? 1 : 0)
+})
+
+test('review progress and completion count unique views from the current candidate set', async t => {
+  const f = await fixture(t), user = await f.login('확인 개수 검증'), token = user.accessToken
+  const p = await f.request('/parties', { token, method: 'POST', body: partyBody, status: 201 }), base = `/parties/${p.id}`
+  await f.request(`${base}/members/me/dietary-confirmation`, { token, method: 'PUT', body: { confirmed: true, restrictionRevision: 1 } })
+  const job = await f.request(`${base}/category-candidates/generate`, { token, method: 'POST', status: 202 })
+  await pollJob(f.request, job, token)
+  const candidates = (await f.request(`${base}/category-candidates`, { token })).items
+  const saved = f.service.get('party', p.id), me = saved.members.find(m => m.userId === user.user.id)
+  me.categoryViews = Array(candidates.length).fill(candidates[0].id).concat('old-candidate-id')
+  f.service.put('party', saved)
+  assert.equal((await f.request(`${base}/category-review/progress`, { token })).viewedCount, 1)
+  await f.request(`${base}/category-review/complete`, { token, method: 'POST', status: 409 })
+  for (const candidate of candidates) await f.request(`${base}/category-candidates/${candidate.id}/view`, { token, method: 'POST' })
+  const progress = await f.request(`${base}/category-review/progress`, { token })
+  assert.equal(progress.viewedCount, candidates.length)
+  assert.equal(progress.totalCount, candidates.length)
+  assert.equal((await f.request(`${base}/category-review/complete`, { token, method: 'POST' })).reviewCompleted, true)
 })

@@ -68,6 +68,7 @@ export class Service {
         }
         for (const cached of this.store.all('idempotency').filter(e => e.principalId === user.id)) this.store.delete('idempotency', cached.id)
         this.store.delete('restriction', user.id)
+        this.store.delete('customer-profile', user.id)
         for (const session of this.store.all('session').filter(s => s.userId === user.id && !s.revoked)) this.put('session', { ...session, revoked: true })
         if (expired && resource?.type === 'QR_GUEST' && resource.status === 'DRAFT') { resource.status = 'CANCELED'; this.orderChanged(resource, 'order.canceled') }
       }

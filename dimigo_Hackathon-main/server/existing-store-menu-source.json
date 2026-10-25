@@ -1,0 +1,168 @@
+{
+  "verifiedAt": "2026-10-25",
+  "notes": [
+    "기존 등록 식당 2곳을 유지하면서 카카오맵 상세보기의 메뉴명과 가격을 확인했다.",
+    "봉구스밥버거의 이미지는 메뉴명·가격이 일치하는 공식 브랜드 메뉴 페이지에서 확인한 이미지다.",
+    "삼겹식당은 카카오맵 메뉴별 지정 사진이 없어 imageUrls를 비웠다. 매장 음식 사진을 다른 메뉴의 전용 사진으로 임의 배정하지 않았다.",
+    "삼겹식당 기존 주소 민속공원로 85는 카카오맵상 중앙돈 중앙역점이다. 실제 삼겹식당 중앙역 주소는 중앙대로 929이며 locationCorrection에 보정 근거를 기록했다. 기존 식당 ID는 유지해야 한다."
+  ],
+  "categories": [
+    { "id": "pork-belly", "name": "삼겹살" },
+    { "id": "pork-neck", "name": "목살" },
+    { "id": "pork-special", "name": "돼지고기" },
+    { "id": "beef-brisket", "name": "차돌박이" },
+    { "id": "rice-burger", "name": "밥버거" }
+  ],
+  "restaurants": [
+    {
+      "id": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "삼겹식당 안산중앙역점",
+      "address": "경기 안산시 단원구 중앙대로 929 안산중앙리베로 오피스텔 1층 104~106호",
+      "phone": "031-365-3838",
+      "imageUrl": "https://img1.kakaocdn.net/cthumb/local/C800x800.q50/?fname=https%3A%2F%2Fpostfiles.pstatic.net%2FMjAyNjAyMjVfMjk1%2FMDAxNzcxOTY5MzQzNzA5.N_UtMfNFdxIpIEU_G8OdFLuHZ7ktdWcPSQULu8XVqWgg.HRWpC6ROS-T_2ZLoOp9DX2h02edYu-q1MUBFpBq8wEEg.JPEG%2F900%25EF%25BC%25BF1771969340147.jpg%3Ftype%3Dw580",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "1820403342",
+        "url": "https://place.map.kakao.com/1820403342",
+        "menuUrl": "https://place.map.kakao.com/1820403342#menuInfo",
+        "verifiedAt": "2026-10-25",
+        "mapName": "삼겹식당 중앙역",
+        "imageSourceUrl": "https://place.map.kakao.com/1820403342#photoview",
+        "imageNote": "카카오맵 음식 사진 탭에서 확인한 해당 매장의 고기 접시 사진. 특정 단품 전용 사진으로 배정하지 않음."
+      },
+      "locationCorrection": {
+        "previousAddress": "경기 안산시 단원구 민속공원로 85",
+        "previousPlaceAtAddress": "중앙돈 중앙역점",
+        "previousPlaceUrl": "https://place.map.kakao.com/1432731549",
+        "verifiedAddress": "경기 안산시 단원구 중앙대로 929 안산중앙리베로 오피스텔 1층 104~106호"
+      }
+    },
+    {
+      "id": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "봉구스밥버거 중앙역점",
+      "address": "경기 안산시 단원구 중앙대로 921 동서코아 1층 124호",
+      "phone": "031-481-8988",
+      "imageUrl": "https://www.bongousse.co.kr/images/menu/100051.png",
+      "source": {
+        "provider": "KAKAO_MAP",
+        "placeId": "24179146",
+        "url": "https://place.map.kakao.com/24179146",
+        "menuUrl": "https://place.map.kakao.com/24179146#menuInfo",
+        "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp",
+        "verifiedAt": "2026-10-25"
+      }
+    }
+  ],
+  "menus": [
+    {
+      "id": "kakao-1820403342-samgyeopsal",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "국내산생삼겹살(180g)",
+      "price": 14000,
+      "categoryId": "pork-belly",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/1820403342#menuInfo", "verifiedAt": "2026-10-25", "imageNote": "카카오맵 메뉴별 사진 미등록" }
+    },
+    {
+      "id": "kakao-1820403342-moksal",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "국내산생목살(180g)",
+      "price": 14000,
+      "categoryId": "pork-neck",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/1820403342#menuInfo", "verifiedAt": "2026-10-25", "imageNote": "카카오맵 메뉴별 사진 미등록" }
+    },
+    {
+      "id": "kakao-1820403342-daepae",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "국내산대패삼겹살(150g)",
+      "price": 12000,
+      "categoryId": "pork-belly",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/1820403342#menuInfo", "verifiedAt": "2026-10-25", "imageNote": "카카오맵 메뉴별 사진 미등록" }
+    },
+    {
+      "id": "kakao-1820403342-jjondeuksal",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "국내산쫀득살(180g)",
+      "price": 14000,
+      "categoryId": "pork-special",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/1820403342#menuInfo", "verifiedAt": "2026-10-25", "imageNote": "카카오맵 메뉴별 사진 미등록" }
+    },
+    {
+      "id": "kakao-1820403342-chadolbagi",
+      "restaurantId": "70cf20c4-3e73-4df4-ba96-514e8be33605",
+      "name": "한우차돌박이(150g)",
+      "price": 22000,
+      "categoryId": "beef-brisket",
+      "imageUrls": [],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/1820403342#menuInfo", "verifiedAt": "2026-10-25", "imageNote": "카카오맵 메뉴별 사진 미등록" }
+    },
+    {
+      "id": "bongousse-100051",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "봉구스밥버거",
+      "price": 3500,
+      "categoryId": "rice-burger",
+      "imageUrls": ["https://www.bongousse.co.kr/images/menu/100051.png"],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/24179146#menuInfo", "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp", "verifiedAt": "2026-10-25", "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지" }
+    },
+    {
+      "id": "bongousse-100052",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "봉순이밥버거",
+      "price": 4200,
+      "categoryId": "rice-burger",
+      "imageUrls": ["https://www.bongousse.co.kr/images/menu/100052.png"],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/24179146#menuInfo", "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp", "verifiedAt": "2026-10-25", "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지" }
+    },
+    {
+      "id": "bongousse-100053",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "햄밥버거",
+      "price": 4500,
+      "categoryId": "rice-burger",
+      "imageUrls": ["https://www.bongousse.co.kr/images/menu/100053.png"],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/24179146#menuInfo", "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp", "verifiedAt": "2026-10-25", "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지" }
+    },
+    {
+      "id": "bongousse-100054",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "치즈밥버거",
+      "price": 4100,
+      "categoryId": "rice-burger",
+      "imageUrls": ["https://www.bongousse.co.kr/images/menu/100054.png"],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/24179146#menuInfo", "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp", "verifiedAt": "2026-10-25", "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지" }
+    },
+    {
+      "id": "bongousse-100055",
+      "restaurantId": "c99490dc-47b7-4f00-abf2-334d66f608bf",
+      "name": "햄치즈밥버거",
+      "price": 5100,
+      "categoryId": "rice-burger",
+      "imageUrls": ["https://www.bongousse.co.kr/images/menu/100055.png"],
+      "salesStatus": "AVAILABLE",
+      "informationStatus": "INCOMPLETE",
+      "source": { "provider": "KAKAO_MAP", "url": "https://place.map.kakao.com/24179146#menuInfo", "imageSourceUrl": "https://www.bongousse.co.kr/Menu_list.asp", "verifiedAt": "2026-10-25", "imageNote": "동일 메뉴의 브랜드 공식 상품 이미지" }
+    }
+  ]
+}
