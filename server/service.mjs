@@ -8,6 +8,7 @@ export class Service {
     this.store = store
     this.options = { demo: false, maxMembers: 8, origin: 'http://localhost:5173', ...options }
     this.options.origin = new URL(this.options.origin).origin
+    this.options.allowedOrigins = new Set([this.options.origin, 'https://www.xiro.my', 'https://xiro.my', 'https://xiro-dimigo-hackathon.vercel.app'])
     if (!Number.isInteger(this.options.maxMembers) || this.options.maxMembers < 1 || this.options.maxMembers > 100) throw new Error('MAX_MEMBERS must be 1–100')
     this.handlers = { ...catalogHandlers, ...reviewHandlers, ...orderHandlers, ...handlers }
     this.timers = new Set()

@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import { randomUUID } from 'node:crypto'
 import { Store } from './store.mjs'
 import { Service } from './service.mjs'
@@ -24,11 +25,18 @@ export function createApp(options = {}) {
     res.set({ 'X-Request-ID': req.requestId, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' })
     next()
   })
+  app.use('/api', cors({
+    origin: [...service.options.allowedOrigins],
+    credentials: true,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'If-Match', 'Last-Event-ID'],
+    exposedHeaders: ['ETag', 'X-Request-ID', 'Retry-After'],
+  }))
   app.use(express.json({ limit: '128kb', strict: true }))
   app.use('/api', (req, res, next) => {
     const origin = req.get('Origin')
-    // API is same-origin behind Vite or the production server. No wildcard CORS.
-    if (origin && origin !== service.options.origin && origin !== `${req.protocol}://${req.get('Host')}`) return next(new ApiError(403, 'FORBIDDEN', '허용되지 않은 출처예요.'))
+    // Allow only the configured frontend and the explicitly listed deployment origins.
+    if (origin && !service.options.allowedOrigins.has(origin) && origin !== `${req.protocol}://${req.get('Host')}`) return next(new ApiError(403, 'FORBIDDEN', '허용되지 않은 출처예요.'))
     next()
   })
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', demo: !!options.demo, localAuth: !!options.localAuth }))
@@ -39,7 +47,7 @@ export function createApp(options = {}) {
     try {
       rateLimit(req)
       const body = req.body || {}
-      if (Object.keys(body).some(k => !['displayName', 'merchant', 'redirectUri'].includes(k)) || typeof body.displayName !== 'string' || !body.displayName.trim() || body.displayName.length > 30 || typeof body.merchant !== 'boolean' || typeof body.redirectUri !== 'string' || new URL(body.redirectUri).origin !== new URL(service.options.origin).origin && new URL(body.redirectUri).origin !== `${req.protocol}://${req.get('Host')}`) fail(422, 'VALIDATION_ERROR', '개발용 로그인 정보를 확인해 주세요.')
+      if (Object.keys(body).some(k => !['displayName', 'merchant', 'redirectUri'].includes(k)) || typeof body.displayName !== 'string' || !body.displayName.trim() || body.displayName.length > 30 || typeof body.merchant !== 'boolean' || typeof body.redirectUri !== 'string' || !service.options.allowedOrigins.has(new URL(body.redirectUri).origin) && new URL(body.redirectUri).origin !== `${req.protocol}://${req.get('Host')}`) fail(422, 'VALIDATION_ERROR', '개발용 로그인 정보를 확인해 주세요.')
       const authorizationCode = store.transaction(() => {
         const user = body.merchant ? service.get('user', 'demo-merchant') : service.put('user', { id: id(), displayName: body.displayName.trim(), principalType: 'USER', roles: ['USER'] })
         const code = secret(); service.put('login-code', { id: hash(code), userId: user.id, redirectUri: body.redirectUri, expires: Date.now() + 60000 }); return code

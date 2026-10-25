@@ -13,7 +13,7 @@ export function verifyPassword(password, record) {
 export function createLocalCode(service, body) {
   if (!body || Array.isArray(body) || typeof body !== 'object') fail(422, 'VALIDATION_ERROR', '로그인 정보를 확인해 주세요.')
   if (Object.keys(body).some(k => !['email', 'password', 'redirectUri'].includes(k)) || typeof body.email !== 'string' || typeof body.password !== 'string' || body.password.length > 256 || typeof body.redirectUri !== 'string') fail(422, 'VALIDATION_ERROR', '이메일과 비밀번호를 확인해 주세요.')
-  if (body.redirectUri !== `${service.options.origin}/`) fail(422, 'VALIDATION_ERROR', '허용되지 않은 로그인 주소예요.')
+  if (![...service.options.allowedOrigins].some(origin => body.redirectUri === `${origin}/`)) fail(422, 'VALIDATION_ERROR', '허용되지 않은 로그인 주소예요.')
   const account = service.store.get('credential', hash(body.email.trim().toLowerCase()))
   if (!verifyPassword(body.password, account?.password)) fail(401, 'UNAUTHORIZED', '이메일 또는 비밀번호를 확인해 주세요.')
   const code = secret(); service.put('login-code', { id: hash(code), userId: account.userId, provider: 'local', redirectUri: body.redirectUri, expires: Date.now() + 60000 })
