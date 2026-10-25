@@ -1,0 +1,242 @@
+openapi: 3.1.0
+info:
+  title: 시로 구현 추가 계약
+  version: 1.0.0
+  description: 원본 80개 작업은 openapi.yaml을 유지한다. 소비자 미리보기, 선택형 로컬 인증, 사용자 기본 정보와 매장 통계의 추가 계약이다.
+servers:
+  - url: /api/v1
+paths:
+  /restaurants/nearby-count:
+    get:
+      summary: 등록 식당 반경별 개수 미리보기
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: latitude, in: query, required: true, schema: { type: number, minimum: -90, maximum: 90 } }
+        - { name: longitude, in: query, required: true, schema: { type: number, minimum: -180, maximum: 180 } }
+        - { name: searchRadiusMeters, in: query, required: true, schema: { type: integer, minimum: 200, maximum: 1000 } }
+      responses:
+        '200':
+          description: 예산·판매 메뉴를 적용하기 전 등록 식당 수. 중복 없이 실제 직선거리를 계산한다.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [count, searchRadiusMeters]
+                properties:
+                  count: { type: integer, minimum: 0 }
+                  searchRadiusMeters: { type: integer, minimum: 200, maximum: 1000 }
+  /me/profile:
+    get:
+      operationId: getMyCustomerProfile
+      summary: 본인의 연령·성별 조회
+      description: 로그인 사용자와 초대/QR 게스트 모두 사용. 다른 사용자의 프로필 조회는 제공하지 않는다. 미입력 시 profile=null.
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: 본인의 기본 정보
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileResponse' }
+        '401': { description: 인증 또는 게스트 참여 만료 }
+    put:
+      operationId: saveMyCustomerProfile
+      summary: 본인의 연령·성별 저장 및 수정
+      description: 본문 전체를 교체하므로 같은 요청을 반복해도 같은 기본 정보가 저장된다. 파티 표시명과 공개 User 계약은 유지한다. 게스트 정보는 참여 종료/만료 정리 시 삭제한다.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [age, gender]
+              properties:
+                age: { type: integer, minimum: 1, maximum: 120, description: 만 나이 }
+                gender: { type: string, enum: [FEMALE, MALE, OTHER, UNDISCLOSED] }
+      responses:
+        '200':
+          description: 저장된 기본 정보
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileResponse' }
+        '401': { description: 인증 또는 게스트 참여 만료 }
+        '422': { description: 연령·성별 또는 허용하지 않은 필드 }
+  /merchant/restaurants/{restaurantId}/stats:
+    get:
+      operationId: getMerchantRestaurantStats
+      summary: 매장별 통계와 전체 가게 카테고리 추세·소거 대안
+      description: 본인 소유 매장만 조회. 한국 시간 오늘을 포함한 3/7/30일. 매장 주문은 접수일 기준 현재 상태를 집계하며 수락 주문만 금액·메뉴 순위·고객 구성에 반영한다. market.popularCategories는 전체 가게 수락 주문을 카테고리로 합산한 수량순 상위 10개이며 orderCount는 해당 카테고리가 포함된 주문 수다. 가게명·타 매장/주문/메뉴 식별자는 반환하지 않는다. 주문 제출 당시 카테고리를 고정하며 이전 주문은 저장 메뉴의 현재 카테고리를 사용한다. market.categoryInsights는 음식 검토 확정일 기준 전체 모임에서 내 매장 판매/품절 메뉴 카테고리가 하나 이상 소거된 모임을 분모로, 내 가게에 없는 카테고리의 생존 모임 수와 비율을 집계한다. 모임당 카테고리별 1회이며 복수 생존하므로 비율 합계는 100% 초과 가능하다. 검토 진행 중은 제외한다. 과거 확정 시각은 기존 생존 이벤트에서 확인되는 경우만 포함한다. 고객은 주문별 참여 인원 합계로 재주문은 중복 집계한다. 주문 제출 당시 연령대/성별 합계만 고정 저장하고 개별 식별자나 정확한 나이는 반환하지 않는다. 이전 주문은 미입력으로 집계한다. 금액은 결제/정산 매출이 아닌 수락 주문 금액이다.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: restaurantId, in: path, required: true, schema: { type: string } }
+        - { name: days, in: query, schema: { type: integer, enum: [3, 7, 30], default: 30 } }
+      responses:
+        '200':
+          description: 주문이 없으면 수치 0, 날짜별 0행, 빈 메뉴 순위를 반환한다. 기간 끝은 다음 날 0시 미포함.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RestaurantStats' }
+        '401': { description: 인증 만료 }
+        '403': { description: 사업자 역할 필요 }
+        '404': { description: 다른 사업자의 매장 또는 존재하지 않는 매장 }
+        '422': { description: 허용하지 않은 기간 또는 쿼리 }
+  /auth/local-codes:
+    post:
+      summary: 운영자 발급 로컬 계정의 비밀번호 검증과 단일 사용 코드 발급
+      description: LOCAL_AUTH_ENABLED=true일 때만 설치. 공개 계정/사업자 생성은 제공하지 않음. 정확히 PUBLIC_ORIGIN/인 redirectUri만 허용. 코드 60초, 한 번만 사용. 이후 provider=local로 /auth/login 호출.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [email, password, redirectUri]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, maxLength: 256 }
+                redirectUri: { type: string, format: uri }
+      responses:
+        '200':
+          description: 로그인 코드
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [authorizationCode]
+                properties:
+                  authorizationCode: { type: string }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  schemas:
+    CustomerProfile:
+      type: object
+      additionalProperties: false
+      required: [age, gender, updatedAt]
+      properties:
+        age: { type: integer, minimum: 1, maximum: 120 }
+        gender: { type: string, enum: [FEMALE, MALE, OTHER, UNDISCLOSED] }
+        updatedAt: { type: string, format: date-time }
+    ProfileResponse:
+      type: object
+      additionalProperties: false
+      required: [profile]
+      properties:
+        profile:
+          anyOf:
+            - { $ref: '#/components/schemas/CustomerProfile' }
+            - { type: 'null' }
+    DistributionRow:
+      type: object
+      additionalProperties: false
+      required: [label, count]
+      properties:
+        label: { type: string }
+        count: { type: integer, minimum: 0 }
+    RestaurantStats:
+      type: object
+      additionalProperties: false
+      required: [restaurantId, days, from, toExclusive, timeZone, summary, daily, popularMenus, ageGroups, genders, generatedAt, market]
+      properties:
+        restaurantId: { type: string }
+        days: { type: integer, enum: [3, 7, 30] }
+        from: { type: string, format: date-time }
+        toExclusive: { type: string, format: date-time }
+        timeZone: { type: string, const: Asia/Seoul }
+        generatedAt: { type: string, format: date-time }
+        summary:
+          type: object
+          additionalProperties: false
+          required: [orders, pendingOrders, confirmedOrders, rejectedOrders, canceledOrders, confirmedAmount, averageConfirmedAmount, participants]
+          properties:
+            orders: { type: integer, minimum: 0 }
+            pendingOrders: { type: integer, minimum: 0 }
+            confirmedOrders: { type: integer, minimum: 0 }
+            rejectedOrders: { type: integer, minimum: 0 }
+            canceledOrders: { type: integer, minimum: 0 }
+            confirmedAmount: { type: integer, minimum: 0 }
+            averageConfirmedAmount: { type: integer, minimum: 0 }
+            participants: { type: integer, minimum: 0 }
+        daily:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [date, orders, confirmedOrders, confirmedAmount]
+            properties:
+              date: { type: string, format: date }
+              orders: { type: integer, minimum: 0 }
+              confirmedOrders: { type: integer, minimum: 0 }
+              confirmedAmount: { type: integer, minimum: 0 }
+        popularMenus:
+          type: array
+          maxItems: 10
+          items:
+            type: object
+            additionalProperties: false
+            required: [menuId, name, quantity, amount]
+            properties:
+              menuId: { type: string }
+              name: { type: string }
+              quantity: { type: integer, minimum: 1 }
+              amount: { type: integer, minimum: 0 }
+        ageGroups:
+          type: array
+          items: { $ref: '#/components/schemas/DistributionRow' }
+        genders:
+          type: array
+          items: { $ref: '#/components/schemas/DistributionRow' }
+        market:
+          type: object
+          additionalProperties: false
+          required: [popularCategories, categoryInsights]
+          properties:
+            popularCategories:
+              type: array
+              maxItems: 10
+              items:
+                type: object
+                additionalProperties: false
+                required: [categoryId, name, quantity, orderCount]
+                properties:
+                  categoryId: { type: [string, 'null'] }
+                  name: { type: string }
+                  quantity: { type: integer, minimum: 1 }
+                  orderCount: { type: integer, minimum: 1 }
+            categoryInsights:
+              type: object
+              additionalProperties: false
+              required: [ownCategories, finalizedReviews, excludedReviews, excludedOwnCategories, survivingAlternatives]
+              properties:
+                ownCategories:
+                  type: array
+                  items: { $ref: '#/components/schemas/CategoryIdentity' }
+                finalizedReviews: { type: integer, minimum: 0 }
+                excludedReviews: { type: integer, minimum: 0 }
+                excludedOwnCategories:
+                  type: array
+                  items:
+                    allOf:
+                      - { $ref: '#/components/schemas/CategoryIdentity' }
+                      - { type: object, required: [partyCount], properties: { partyCount: { type: integer, minimum: 1 } } }
+                survivingAlternatives:
+                  type: array
+                  items:
+                    allOf:
+                      - { $ref: '#/components/schemas/CategoryIdentity' }
+                      - type: object
+                        required: [partyCount, sharePercent]
+                        properties:
+                          partyCount: { type: integer, minimum: 1 }
+                          sharePercent: { type: integer, minimum: 0, maximum: 100 }
+    CategoryIdentity:
+      type: object
+      required: [categoryId, name]
+      properties:
+        categoryId: { type: string }
+        name: { type: string }

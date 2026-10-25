@@ -1,0 +1,120 @@
+{
+  "verifiedAt": "2026-10-25",
+  "provider": "KAKAO_MAP",
+  "coordinateSystem": "WCONGNAMUL",
+  "method": "카카오맵 검색 결과의 정확한 장소명·주소·상세보기 placeId를 확인하고 장소 링크를 클릭한 뒤 URL복사 공유 링크를 열었다. 최종 URL의 hId가 선택한 placeId와 같은 것을 확인한 urlX/urlY 값이다.",
+  "points": [
+    {
+      "placeId": "589846825",
+      "name": "포크너",
+      "address": "경기 안산시 단원구 예술대학로 11 해남빌딩 112호",
+      "x": 463777,
+      "y": 1060823,
+      "shareUrl": "https://kko.to/KYzPaEjjoV",
+      "finalUrl": "https://map.kakao.com/?map_type=TYPE_MAP&q=%ED%8F%AC%ED%81%AC%EB%84%88+%EC%95%88%EC%82%B0&hId=589846825&mode=place&urlLevel=3&urlX=463777&urlY=1060823",
+      "location": {
+        "latitude": 37.318107001,
+        "longitude": 126.836537927
+      }
+    },
+    {
+      "placeId": "712291276",
+      "name": "히또시",
+      "address": "경기 안산시 단원구 광덕4로 246 126호",
+      "x": 464490,
+      "y": 1059736,
+      "shareUrl": "https://kko.to/WRgeLwaiCv",
+      "finalUrl": "https://map.kakao.com/?map_type=TYPE_MAP&q=%ED%9E%88%EB%98%90%EC%8B%9C+%EC%95%88%EC%82%B0&hId=712291276&mode=place&urlLevel=3&urlX=464490&urlY=1059736",
+      "location": {
+        "latitude": 37.31419372,
+        "longitude": 126.839763758
+      }
+    },
+    {
+      "placeId": "1325696737",
+      "name": "30센치옛날수제왕돈가스",
+      "address": "경기 안산시 단원구 예술대학로 17 중앙노블레스 B동 221호",
+      "x": 463770,
+      "y": 1060983,
+      "shareUrl": "https://kko.to/95bD3-hTPR",
+      "finalUrl": "https://map.kakao.com/?map_type=TYPE_MAP&q=30%EC%84%BC%EC%B9%98%EC%98%9B%EB%82%A0%EC%88%98%EC%A0%9C%EC%99%95%EB%8F%88%EA%B0%80%EC%8A%A4&hId=1325696737&mode=place&urlLevel=3&urlX=463770&urlY=1060983",
+      "location": {
+        "latitude": 37.318683617,
+        "longitude": 126.836505089
+      }
+    },
+    {
+      "placeId": "395041368",
+      "name": "소담촌 안산중앙역점",
+      "address": "경기 안산시 단원구 고잔1길 16 중앙마케이트빌딩 6층 601~604호",
+      "x": 463472,
+      "y": 1060798,
+      "shareUrl": "https://kko.to/pLUxWXXDA1",
+      "finalUrl": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EC%86%8C%EB%8B%B4%EC%B4%8C+%EC%95%88%EC%82%B0%EC%A4%91%EC%95%99%EC%97%AD%EC%A0%90&hId=395041368&mode=place&urlLevel=3&urlX=463472&urlY=1060798",
+      "location": {
+        "latitude": 37.318014989,
+        "longitude": 126.835161767
+      }
+    },
+    {
+      "placeId": "16311884",
+      "name": "춘천명물닭갈비막국수",
+      "address": "경기 안산시 단원구 고잔2길 38 1층",
+      "x": 463540,
+      "y": 1060673,
+      "shareUrl": "https://kko.to/2r-44wwBTm",
+      "finalUrl": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EC%B6%98%EC%B2%9C%EB%AA%85%EB%AC%BC%EB%8B%AD%EA%B0%88%EB%B9%84%EB%A7%89%EA%B5%AD%EC%88%98+%EC%95%88%EC%82%B0&hId=16311884&mode=place&urlLevel=3&urlX=463540&urlY=1060673",
+      "location": {
+        "latitude": 37.317564901,
+        "longitude": 126.835469609
+      }
+    },
+    {
+      "placeId": "1820403342",
+      "name": "삼겹식당 중앙역",
+      "address": "경기 안산시 단원구 중앙대로 929 안산중앙리베로 오피스텔 1층 104~106호",
+      "x": 464535,
+      "y": 1060541,
+      "shareUrl": "https://kko.to/YkaP4Ys509",
+      "finalUrl": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EC%82%BC%EA%B2%B9%EC%8B%9D%EB%8B%B9&hId=1820403342&mode=place&urlLevel=3&urlX=464535&urlY=1060541",
+      "location": {
+        "latitude": 37.317095314,
+        "longitude": 126.839960665
+      }
+    },
+    {
+      "placeId": "24179146",
+      "name": "봉구스밥버거 중앙역점",
+      "address": "경기 안산시 단원구 중앙대로 921 동서코아 1층 124호",
+      "x": 464355,
+      "y": 1060501,
+      "shareUrl": "https://kko.to/TZ6hvPhItC",
+      "finalUrl": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EB%B4%89%EA%B5%AC%EC%8A%A4%EB%B0%A5%EB%B2%84%EA%B1%B0+%EC%A4%91%EC%95%99%EC%97%AD%EC%A0%90&hId=24179146&mode=place&urlLevel=3&urlX=464355&urlY=1060501",
+      "location": {
+        "latitude": 37.316950048,
+        "longitude": 126.839148708
+      }
+    },
+    {
+      "placeId": "27446506",
+      "name": "중앙역 4호선 1번출구",
+      "address": "경기 안산시 단원구 중앙대로 918",
+      "kind": "STATION_ENTRANCE",
+      "x": 464265,
+      "y": 1060276,
+      "shareUrl": "https://kko.to/p3TBTpDGJ4",
+      "finalUrl": "https://map.kakao.com/?map_type=TYPE_MAP&q=%EC%95%88%EC%82%B0+%EC%A4%91%EC%95%99%EC%97%AD+1%EB%B2%88%EC%B6%9C%EA%B5%AC&hId=27446506&mode=place&urlLevel=3&urlX=464265&urlY=1060276",
+      "location": {
+        "latitude": 37.316138568,
+        "longitude": 126.838744308
+      }
+    }
+  ],
+  "conversion": {
+    "input": "WCONGNAMUL",
+    "intermediate": "EPSG:5181 (x/2.5, y/2.5)",
+    "output": "EPSG:4326",
+    "verifiedAgainst": "https://apis.map.kakao.com/web/documentation/#Coords_toLatLng",
+    "referenceExampleMatched": true
+  }
+}

@@ -1,5 +1,11 @@
+node_modules/
+dist/
+*.local
 .env
 .env.*
 !.env.example
-node_modules/
-dist/
+*.tsbuildinfo
+data/*
+test-results/
+playwright-report/
+backups/
