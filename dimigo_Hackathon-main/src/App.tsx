@@ -1,13 +1,14 @@
 import { randomId } from './lib/randomId'
 import { useEffect, useState, type ReactNode } from 'react'
 import CreateParty from './pages/CreateParty'
+import Onboarding from './pages/Onboarding'
 import MenuVote from './pages/MenuVote'
 import LiveParty from './pages/LiveParty'
 import Merchant from './pages/Merchant'
 import DietaryRestrictions from './pages/DietaryRestrictions'
 import OrderPage from './pages/OrderPage'
 import { sampleParty, type Party as LegacyParty, type PartySettings } from './data/sampleParty'
-import { api, allPages, currentUser, demoLogin, localLogin, logout, setSession } from './lib/api'
+import { ApiError, api, allPages, currentUser, demoLogin, localLogin, logout, setSession } from './lib/api'
 import type { GuestOrderSession, GuestSession, Party, StoreQrInfo, User } from './types/api'
 import './styles/onboarding.css'
 import './styles/flow.css'
@@ -15,22 +16,38 @@ import './styles/flow.css'
 function navigate(path: string) { history.pushState(null, '', path); window.dispatchEvent(new PopStateEvent('popstate')) }
 export default function App() {
   const [path, setPath] = useState(window.location.pathname), [user, setUser] = useState<User | null>(currentUser)
+  const [sessionReady, setSessionReady] = useState(() => currentUser() === null)
+  const [sessionFailed, setSessionFailed] = useState(false), [sessionAttempt, setSessionAttempt] = useState(0)
   const [demo, setDemo] = useState(false), [serverReady, setServerReady] = useState(false)
-  const [localAuth, setLocalAuth] = useState(false), [email, setEmail] = useState(''), [password, setPassword] = useState('')
+  const [localAuth, setLocalAuth] = useState(false)
   const [error, setError] = useState(''), [busy, setBusy] = useState(false), [name, setName] = useState('')
   const [parties, setParties] = useState<Party[]>([]), [editing, setEditing] = useState<Party | null>(null)
   useEffect(() => { const change = () => { setPath(window.location.pathname); setError('') }; window.addEventListener('popstate', change); return () => window.removeEventListener('popstate', change) }, [])
-  useEffect(() => { void api<{ demo: boolean; localAuth: boolean }>('/health').then(r => { setDemo(r.demo); setLocalAuth(r.localAuth); setServerReady(true) }).catch(e => setError(e.message)) }, [])
-  useEffect(() => { if (user && path === '/') void allPages<Party>('/me/parties').then(setParties).catch(e => setError(e.message)) }, [user, path])
+  useEffect(() => { void api<{ demo: boolean; localAuth: boolean }>('/health', { expectJson: true }).then(r => { setDemo(r.demo); setLocalAuth(r.localAuth); setServerReady(true) }).catch(e => setError(e.message)) }, [])
+  useEffect(() => {
+    if (!currentUser()) return
+    let active = true
+    setSessionFailed(false)
+    void api<User>('/me', { expectJson: true }).then(account => { if (active) { setUser(account); setSessionReady(true) } }).catch(e => {
+      if (!active) return
+      if (e instanceof ApiError && e.status === 401) { setSession(null); setUser(null); setSessionReady(true) }
+      else setSessionFailed(true)
+      setError(e instanceof Error ? e.message : '로그인 상태를 확인하지 못했어요.')
+    })
+    return () => { active = false }
+  }, [sessionAttempt])
+  useEffect(() => { if (user && sessionReady && path === '/') void allPages<Party>('/me/parties').then(setParties).catch(e => setError(e.message)) }, [user, sessionReady, path])
   async function run(action: () => Promise<void>) { if (busy) return; setBusy(true); setError(''); try { await action() } catch (e) { setError(e instanceof Error ? e.message : '요청에 실패했어요.') } finally { setBusy(false) } }
   const home = () => navigate('/')
   const signout = () => void run(async () => { try { await logout() } finally { setUser(null); setEditing(null); home() } })
   if (import.meta.env.DEV && path === '/dev/sample-party/menu') return <MenuVote party={sampleParty} participantId="sample-participant-01" nickname="샘플" onBack={home} onHome={home} />
+  if (path === '/merchant-preview' && !user && demo) return <Merchant user={null} preview onHome={home} />
   const inviteToken = path.startsWith('/invite/') ? decodeURIComponent(path.slice(8)) : null
   const qrToken = path.startsWith('/store/') ? decodeURIComponent(path.slice(7)) : null
   const partyId = path.startsWith('/party/') ? decodeURIComponent(path.slice(7)) : null
   const orderId = path.startsWith('/order/') ? decodeURIComponent(path.slice(7)) : null
   const errorBanner = error && <div className="app-error" role="alert">{error}<button aria-label="오류 메시지 닫기" onClick={() => setError('')}>×</button></div>
+  if (user && !sessionReady) return <main className="onboarding flow-screen"><Header title="시로" /><p role="status">{sessionFailed ? '로그인 상태를 확인하지 못했어요.' : '로그인 상태를 확인하는 중…'}</p>{errorBanner}{sessionFailed && <button className="secondary" onClick={() => { setError(''); setSessionAttempt(value => value + 1) }}>다시 연결</button>}</main>
   if (inviteToken) return <Entry title="함께 먹을 메뉴를 골라요" description="초대받은 파티에 참여하세요." name={name} setName={setName} busy={busy} error={errorBanner} onSubmit={() => void run(async () => {
     if (user?.principalType === 'USER') {
       const joinedMember = await api<{ id: string }>(`/party-invites/${encodeURIComponent(inviteToken)}/join`, { method: 'POST' })
@@ -43,9 +60,10 @@ export default function App() {
     }
   })} submit={user?.principalType === 'USER' ? `${user.displayName}님으로 참여` : '게스트로 참여'} onHome={home} />
   if (qrToken) return <QrEntry token={qrToken} user={user} onSession={value => { setSession(value); setUser(value.guestUser); navigate(`/order/${value.order.id}`) }} onParty={id => navigate(`/party/${id}`)} onHome={home} />
-  if (!user) return <Entry title="오늘 뭐 먹지? 시로!" description={demo ? '개발용 로그인 · 등록 매장과 데이터는 시연용입니다.' : '로그인하여 파티를 시작하세요.'} name={name} setName={setName} busy={busy} error={errorBanner} submit={demo ? '닉네임으로 시연 시작' : localAuth ? '로그인' : '로그인 준비 중'} disabled={!demo && !localAuth || !serverReady} onSubmit={() => void run(async () => { setUser(demo ? await demoLogin(name.trim() || '게스트') : await localLogin(email, password)); setPassword(''); home() })} onHome={home} credentials={!demo && localAuth ? <><label>이메일<input type="email" required autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} /></label><label>비밀번호<input type="password" required autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} /></label></> : undefined}>
-    {demo && <button className="secondary" disabled={busy} onClick={() => void run(async () => { setUser(await demoLogin('시연 사장님', true)); navigate('/merchant') })}>사장님 시연 시작</button>}
-  </Entry>
+  if (!user) return <Onboarding demo={demo} localAuth={localAuth} ready={serverReady} busy={busy} error={error}
+    onStart={nickname => void run(async () => { setUser(await demoLogin(nickname)); home() })}
+    onLocalLogin={(loginEmail, loginPassword) => void run(async () => { setUser(await localLogin(loginEmail, loginPassword)); home() })}
+    onMerchantDemo={() => void run(async () => { setUser(await demoLogin('시연 사장님', true)); navigate('/merchant') })} />
   if (path === '/create') {
     const initial: LegacyParty | null = editing ? { id: editing.id, name: editing.title, place: editing.location.address || editing.title, location: { id: editing.id, name: editing.location.address || editing.title, address: editing.location.address || '', latitude: editing.location.latitude, longitude: editing.location.longitude, url: '', category: '' }, radiusKm: editing.searchRadiusMeters / 1000, budgetMax: editing.budgetPerPerson ?? 25000, candidates: [] } : null
     const create = (settings: PartySettings) => void run(async () => {
@@ -57,12 +75,11 @@ export default function App() {
   }
   if (path === '/restrictions') return <DietaryRestrictions onBack={home} />
   if (path === '/merchant') return <Merchant user={user} onHome={home} onLogout={signout} />
-  if (partyId) return <LiveParty key={partyId} id={partyId} user={user} demo={demo} onHome={home} onEdit={p => { setEditing(p); navigate('/create') }} />
+  if (partyId) return <LiveParty key={partyId} id={partyId} user={user} onHome={home} onEdit={p => { setEditing(p); navigate('/create') }} />
   if (orderId) return <OrderPage key={orderId} id={orderId} user={user} onHome={home} />
-  return <main className="onboarding flow-screen"><Header title="시로" user={user} onLogout={signout} />{errorBanner}
-    {demo && <p className="mode-label">시연 모드 · 가상의 매장 데이터</p>}
-    <section className="welcome-card"><span className="eyebrow">함께 고르는 즐거움</span><h1>싫은 건 빼고,<br />맛있는 것만 남겨요</h1><p>친구를 초대하고 우리 모두의 한 끼를 정해요.</p></section>
-    {user.principalType === 'USER' && <button className="primary" onClick={() => { setEditing(null); navigate('/create') }}>＋ 파티 만들기</button>}
+  return <main className="onboarding flow-screen home-screen"><Header title="시로" user={user} onLogout={signout} />{errorBanner}
+    <section className="welcome-card"><div className="welcome-main"><h1>싫은 건 빼고,<br />맛있는 것만 남겨요</h1><img src="/images/mascot.png" alt="" /></div></section>
+    {user.principalType === 'USER' && <button className="primary home-create-button" onClick={() => { setEditing(null); navigate('/create') }}>＋ 파티 만들기</button>}
     <button className="secondary" onClick={() => navigate('/restrictions')}>내 식사 제한 관리</button>
     {user.roles.includes('MERCHANT') && <button className="secondary" onClick={() => navigate('/merchant')}>사장님 매장 관리</button>}
     <h2>내 파티</h2>{parties.length === 0 && <p className="muted">아직 참여한 파티가 없어요. 초대 링크로도 참여할 수 있어요.</p>}

@@ -9,6 +9,7 @@ export interface SearchPagination { totalCount: number; current: number; last: n
 type SearchCallback = (places: SearchPlace[], status: string, pagination: SearchPagination) => void
 interface PlaceService {
   keywordSearch(query: string, callback: SearchCallback, options: { page: number; size: number }): void
+  categorySearch(code: string, callback: SearchCallback, options: { location: LatLng; radius: number; sort: string; size: number }): void
 }
 interface LatLng { getLat(): number; getLng(): number }
 interface Bounds { extend(position: LatLng): void }
@@ -34,7 +35,7 @@ export interface MapsSDK {
   ZoomControl: new () => object
   ControlPosition: { RIGHT: number }
   event: { addListener(target: object, type: string, callback: () => void): void; removeListener(target: object, type: string, callback: () => void): void }
-  services: { Places: new () => PlaceService; Status: { OK: string; ZERO_RESULT: string } }
+  services: { Places: new () => PlaceService; Status: { OK: string; ZERO_RESULT: string }; SortBy: { DISTANCE: string } }
 }
 declare global { interface Window { kakao?: { maps: MapsSDK } } }
 let pendingSDK: Promise<MapsSDK> | null = null
@@ -43,7 +44,7 @@ export function loadKakaoMaps(): Promise<MapsSDK> {
   if (window.kakao?.maps?.services) return Promise.resolve(window.kakao.maps)
   if (pendingSDK) return pendingSDK
   const key = import.meta.env.VITE_KAKAO_MAP_APP_KEY?.trim()
-  if (!key) return Promise.reject(new Error('지도를 준비 중이에요. 지도 키 설정 후 다시 시도해 주세요.'))
+  if (!key) return Promise.reject(new Error('카카오 지도 JavaScript 키가 설정되지 않았어요. 지도 설정 후 다시 시도해 주세요.'))
   pendingSDK = new Promise<MapsSDK>((resolve, reject) => {
     document.getElementById('kakao-map-sdk')?.remove()
     const script = document.createElement('script')
@@ -53,7 +54,7 @@ export function loadKakaoMaps(): Promise<MapsSDK> {
     const fail = () => {
       window.clearTimeout(timeout)
       script.remove()
-      reject(new Error('지도를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.'))
+      reject(new Error('지도를 불러오지 못했어요. 지도 키·허용된 사이트 주소·인터넷 연결을 확인해 주세요.'))
     }
     const timeout = window.setTimeout(fail, 15000)
     script.onerror = fail
@@ -86,5 +87,21 @@ export function searchPlaces(sdk: MapsSDK, query: string, page: number) {
       })
       else reject(new Error('장소를 검색하지 못했어요. 잠시 후 다시 시도해 주세요.'))
     }, { page, size: 5 })
+  })
+}
+
+export function searchNearbyStation(sdk: MapsSDK, place: PlaceLocation): Promise<PlaceLocation | null> {
+  return new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => reject(new Error('주변 역 검색 시간이 초과됐어요.')), 8000)
+    new sdk.services.Places().categorySearch('SW8', (data, status) => {
+      window.clearTimeout(timeout)
+      if (status === sdk.services.Status.ZERO_RESULT) { resolve(null); return }
+      if (status !== sdk.services.Status.OK) { reject(new Error('주변 역을 검색하지 못했어요.')); return }
+      const station = data.find(item => Number.isFinite(Number(item.y)) && Number.isFinite(Number(item.x)))
+      resolve(station ? {
+        id: station.id, name: station.place_name, address: station.road_address_name || station.address_name,
+        latitude: Number(station.y), longitude: Number(station.x), url: station.place_url, category: station.category_name,
+      } : null)
+    }, { location: new sdk.LatLng(place.latitude, place.longitude), radius: 1500, sort: sdk.services.SortBy.DISTANCE, size: 5 })
   })
 }

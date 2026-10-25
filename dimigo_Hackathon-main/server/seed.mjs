@@ -11,17 +11,20 @@ export function seedReference(service) {
 }
 export function seed(service) {
   const catalog = JSON.parse(readFileSync(new URL('./demo-catalog.json', import.meta.url), 'utf8'))
-  if (service.store.get('setting', 'demo-seeded')) return
-  service.put('user', { id: 'demo-merchant', displayName: '시연 사장님', principalType: 'USER', roles: ['USER', 'MERCHANT'] })
+  const initialized = service.store.get('setting', 'demo-seeded')
+  if (!initialized) service.put('user', { id: 'demo-merchant', displayName: '시연 사장님', principalType: 'USER', roles: ['USER', 'MERCHANT'] })
   seedReference(service)
-  for (const r of catalog.restaurants) service.put('restaurant', { ...r, version: 1, ownerId: 'demo-merchant', businessHours: [], phone: '000-0000-0000', orderEnabled: true, createdAt: now() })
+  if (!initialized) for (const r of catalog.restaurants) service.put('restaurant', { ...r, version: 1, ownerId: 'demo-merchant', businessHours: [], phone: '000-0000-0000', orderEnabled: true, createdAt: now() })
   const metadata = {
     bibimbap: ['BEEF', 'SOY', 'MEAT', 'ANIMAL_PRODUCT'], noodles: ['WHEAT', 'FISH', 'ANIMAL_PRODUCT'], tonkatsu: ['PORK', 'WHEAT', 'EGG', 'MEAT', 'ANIMAL_PRODUCT'],
     'bibimbap-b': ['SOY'], pasta: ['WHEAT', 'MILK', 'ANIMAL_PRODUCT'], salad: [], soldout: ['FISH', 'ANIMAL_PRODUCT'], hidden: ['WHEAT', 'MILK', 'ANIMAL_PRODUCT'],
+    spicy: ['WHEAT', 'SOY', 'EGG', 'PORK', 'MEAT', 'ANIMAL_PRODUCT'], stew: ['PORK', 'MEAT', 'ANIMAL_PRODUCT'], sushi: ['FISH', 'ANIMAL_PRODUCT'],
+    burger: ['BEEF', 'WHEAT', 'MEAT', 'ANIMAL_PRODUCT'], rice: ['EGG', 'SOY', 'ANIMAL_PRODUCT'], pizza: ['WHEAT', 'MILK', 'ANIMAL_PRODUCT'],
   }
   for (const m of catalog.menus) {
+    if (service.store.get('menu', m.id)) continue
     const code = m.id.replace(/^demo-(city|wadong)-/, ''), codes = metadata[code] || []
     service.put('menu', { ...m, version: 1, ingredientIds: codes, allergenCodes: codes.filter(c => restrictionTargets.some(t => t.code === c && t.type === 'ALLERGY')), restrictionTargetCodes: codes, informationStatus: 'COMPLETE', imageUrls: [], isRepresentative: true, options: [], deleted: false })
   }
-  service.put('setting', { id: 'demo-seeded', version: 1 })
+  if (!initialized) service.put('setting', { id: 'demo-seeded', version: 1 })
 }

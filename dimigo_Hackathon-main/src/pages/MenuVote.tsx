@@ -3,7 +3,7 @@ import { partyFoods, type Party } from '../data/sampleParty'
 import { formatRadius } from '../lib/registeredCatalog'
 
 type Vote = { reviewed: string[]; excluded: string[] }
-type Gesture = { id: string; pointerId: number; x: number; y: number; axis: 'pending' | 'horizontal' | 'vertical' }
+type Gesture = { id: string; pointerId: number; x: number; y: number; axis: 'pending' | 'horizontal' | 'vertical'; card: HTMLElement }
 const asset = (name: string) => `${import.meta.env.BASE_URL}images/${encodeURIComponent(name)}`
 const voteKey = (partyId: string, participantId: string) => `xiro.party-vote.v1:${encodeURIComponent(partyId)}:${encodeURIComponent(participantId)}`
 function readVote(key: string, ids: string[]): Vote {
@@ -27,10 +27,10 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
   const [history, setHistory] = useState<Vote[]>([])
   const [notice, setNotice] = useState('')
   const [panel, setPanel] = useState<'profile' | 'party' | null>(null)
-  const [drag, setDrag] = useState<{ id: string; x: number } | null>(null)
   const [exiting, setExiting] = useState<string[]>([])
   const pointer = useRef<Gesture | null>(null)
   const exitTimers = useRef(new Map<string, number>())
+  const rows = useRef(new Map<string, HTMLElement>())
   useEffect(() => () => { exitTimers.current.forEach(timer => window.clearTimeout(timer)) }, [])
 
   const save = (next: Vote) => {
@@ -44,22 +44,27 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
     save({ reviewed: [...new Set([...vote.reviewed, id])], excluded: [...vote.excluded, id] })
     setNotice('')
   }
-  const animateEliminate = (id: string) => {
+  const resetDrag = (card: HTMLElement) => { card.style.transition = 'transform 160ms cubic-bezier(.2,.8,.2,1)'; card.style.transform = '' }
+  const animateEliminate = (id: string, card?: HTMLElement) => {
     if (vote.excluded.includes(id)) return
-    setDrag(null)
+    const target = card || rows.current.get(id)?.querySelector<HTMLElement>('.food-card')
+    if (target) { target.style.transition = 'transform 200ms cubic-bezier(.2,.8,.2,1)'; target.style.transform = 'translate3d(-110%, 0, 0)' }
     setExiting(previous => [...previous, id])
     eliminate(id)
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const timer = window.setTimeout(() => {
       setExiting(previous => previous.filter(item => item !== id))
+      window.requestAnimationFrame(() => { target?.style.removeProperty('transition'); target?.style.removeProperty('transform') })
       exitTimers.current.delete(id)
-    }, reducedMotion ? 0 : 260)
+    }, reducedMotion ? 0 : 200)
     exitTimers.current.set(id, timer)
   }
   const cancelExit = (id: string) => {
     window.clearTimeout(exitTimers.current.get(id))
     exitTimers.current.delete(id)
     setExiting(previous => previous.filter(item => item !== id))
+    const card = rows.current.get(id)?.querySelector<HTMLElement>('.food-card')
+    if (card) resetDrag(card)
   }
   const restore = (id: string) => {
     if (!vote.excluded.includes(id)) return
@@ -82,9 +87,6 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
   }
 
   return <main className="onboarding vote-screen">
-    {party.sample && <div className="sample-ribbon">개발용 샘플 파티</div>}
-    {!party.sample && party.candidateSource === 'demo' && <div className="sample-ribbon">메뉴·가격은 시연 데이터입니다</div>}
-    {party.candidateSource === 'registered' && <div className="sample-ribbon">등록 식당의 판매 메뉴 · 시연용 등록 데이터</div>}
     <header className="preferences-header">
       <button onClick={onBack} aria-label="파티 대기실로 돌아가기">〈 <span>대기실</span></button>
       <span className="preferences-logo"><img src={asset('logo.png')} alt="시로 XIRO" /></span>
@@ -101,12 +103,12 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
       const excluded = vote.excluded.includes(food.id)
       const reviewed = vote.reviewed.includes(food.id)
       const isExiting = exiting.includes(food.id)
-      return <li key={food.id} className={`food-row ${excluded && !isExiting ? 'is-collapsed' : ''} ${isExiting ? 'is-exiting' : ''}`}>
+      return <li key={food.id} ref={element => { if (element) rows.current.set(food.id, element); else rows.current.delete(food.id) }} className={`food-row ${excluded && !isExiting ? 'is-collapsed' : ''} ${isExiting ? 'is-exiting' : ''}`}>
         <div className="swipe-reveal" aria-hidden="true">제외</div>
         <article className="food-card"
           onPointerDown={event => {
             if ((event.target as HTMLElement).closest('button')) return
-            pointer.current = { id: food.id, pointerId: event.pointerId, x: event.clientX, y: event.clientY, axis: 'pending' }
+            pointer.current = { id: food.id, pointerId: event.pointerId, x: event.clientX, y: event.clientY, axis: 'pending', card: event.currentTarget }
           }}
           onPointerMove={event => {
             const gesture = pointer.current
@@ -122,7 +124,8 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
             }
             if (gesture.axis === 'horizontal') {
               event.preventDefault()
-              setDrag({ id: food.id, x: Math.max(-event.currentTarget.clientWidth, Math.min(0, dx)) })
+              event.currentTarget.style.transition = 'none'
+              event.currentTarget.style.transform = `translate3d(${Math.max(-event.currentTarget.clientWidth, Math.min(0, dx))}px, 0, 0)`
             }
           }}
           onPointerUp={event => {
@@ -131,14 +134,13 @@ export default function MenuVote({ party, participantId, nickname, onBack, onHom
             if (gesture.axis === 'horizontal') {
               const dx = event.clientX - gesture.x
               const threshold = Math.min(96, event.currentTarget.clientWidth * 0.28)
-              if (dx <= -threshold) animateEliminate(food.id)
-              else setDrag(null)
+              if (dx <= -threshold) animateEliminate(food.id, event.currentTarget)
+              else resetDrag(event.currentTarget)
               if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
             }
             pointer.current = null
           }}
-          onPointerCancel={() => { pointer.current = null; setDrag(null) }}
-          style={drag?.id === food.id ? { transform: `translate3d(${drag.x}px, 0, 0)`, transition: 'none' } : undefined}
+          onPointerCancel={() => { if (pointer.current?.axis === 'horizontal') resetDrag(pointer.current.card); pointer.current = null }}
         >
           <img className="food-photo" src={asset(food.image)} alt={food.name} draggable={false} />
           <div className="food-info"><h2>{food.name}</h2><p>{food.description}</p><strong>{food.price}</strong><small>{food.detail}</small><div className="food-controls"><span>{excluded ? '소거됨' : reviewed ? '확인 · 후보' : '미확인'}</span>{!reviewed && <button onClick={() => confirm(food.id)}>확인</button>}<button onClick={() => animateEliminate(food.id)}>소거</button></div></div>

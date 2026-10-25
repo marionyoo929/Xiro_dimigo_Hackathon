@@ -207,7 +207,7 @@ function modifyRestrictions(req, items) {
   if (items.length > 50) fail(422, 'VALIDATION_ERROR', '식사 제한은 50개까지 등록할 수 있어요.')
   const seen = new Set()
   for (const item of items) {
-    if (!this.options.restrictionTargets.some(t => t.code === item.targetCode && t.type === item.type) || seen.has(item.targetCode)) fail(422, 'VALIDATION_ERROR', '식사 제한 코드를 확인해 주세요.')
+    if (!this.options.restrictionTargets.some(t => t.code === item.targetCode) || !['ALLERGY', 'RELIGIOUS', 'VEGETARIAN', 'INGREDIENT_AVOIDANCE', 'MEDICAL', 'OTHER'].includes(item.type) || seen.has(item.targetCode)) fail(422, 'VALIDATION_ERROR', '식사 제한 코드를 확인해 주세요.')
     seen.add(item.targetCode)
   }
   this.put('restriction', { id: req.user.id, revision: current.revision + 1, items: items.map(item => ({ ...item, id: item.id || id() })) })

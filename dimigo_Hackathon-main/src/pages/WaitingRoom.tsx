@@ -13,7 +13,7 @@ export default function WaitingRoom({ party, onNext, onEdit }: PageProps & { par
     </>}
     <p>파티 대기실</p>
     <button type="button" onClick={onEdit}>장소·조건 변경</button>
-    <p className="demo-data-notice">선택한 반경 안의 등록 식당에서 판매 중인 메뉴만 후보로 표시해요. 현재는 시연용 등록 데이터입니다.</p>
+    <p className="demo-data-notice">선택한 반경 안의 등록 식당에서 판매 중인 메뉴만 후보로 표시해요.</p>
     {partyFoods(party).length === 0 && <p className="demo-data-notice" role="status">반경과 예산에 맞는 등록 메뉴가 없어요. 장소·조건을 변경해 주세요.</p>}
     <button type="button" onClick={onNext} disabled={partyFoods(party).length === 0}>메뉴 소거 시작</button>
   </>

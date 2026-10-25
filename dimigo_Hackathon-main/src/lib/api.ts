@@ -14,13 +14,36 @@ export function setSession(value: AuthTokens | GuestSession | GuestOrderSession 
 export class ApiError extends Error {
   constructor(public status: number, public code: string, message: string, public details: Record<string, unknown> = {}) { super(message) }
 }
-type RequestOptions = { method?: string; body?: unknown; version?: number; key?: string; signal?: AbortSignal }
+type RequestOptions = { method?: string; body?: unknown; version?: number; key?: string; signal?: AbortSignal; expectJson?: boolean }
+async function readResponse<T>(response: Response, expectJson = false): Promise<T> {
+  if (response.status === 204) {
+    if (expectJson) throw new ApiError(204, 'EMPTY_RESPONSE', '서버가 필요한 데이터를 보내지 않았어요. 다시 시도해 주세요.')
+    return undefined as T
+  }
+  const body = await response.text()
+  if (!body.trim()) throw new ApiError(response.status, 'EMPTY_RESPONSE', `서버 응답이 비어 있어요 (HTTP ${response.status}). 서버 연결을 확인하고 다시 시도해 주세요.`)
+  let value: unknown
+  try { value = JSON.parse(body) }
+  catch { throw new ApiError(response.status, 'INVALID_RESPONSE', `서버 응답을 읽을 수 없어요 (HTTP ${response.status}). 서버 연결을 확인하고 다시 시도해 주세요.`) }
+  if (!response.ok) {
+    const error = value && typeof value === 'object' && 'error' in value ? value.error : null
+    const details = error && typeof error === 'object' ? error as { code?: string; message?: string; details?: Record<string, unknown> } : null
+    throw new ApiError(response.status, details?.code || 'REQUEST_FAILED', details?.message || '요청에 실패했어요.', details?.details)
+  }
+  if (expectJson && (!value || typeof value !== 'object')) throw new ApiError(response.status, 'INVALID_RESPONSE', '서버가 필요한 데이터를 보내지 않았어요. 다시 시도해 주세요.')
+  return value as T
+}
+function requireTokens(value: AuthTokens): AuthTokens {
+  if (typeof value?.accessToken !== 'string' || typeof value?.refreshToken !== 'string' || !value.user || typeof value.user.id !== 'string')
+    throw new ApiError(200, 'INVALID_RESPONSE', '로그인 응답이 올바르지 않아요. 다시 시도해 주세요.')
+  return value
+}
 async function refresh() {
   if (!session?.refreshToken) throw new ApiError(401, 'TOKEN_EXPIRED', '다시 로그인해 주세요.')
   if (!refreshing) refreshing = (async () => {
     const response = await fetch('/api/v1/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: session!.refreshToken }) })
-    if (!response.ok) throw new ApiError(401, 'TOKEN_EXPIRED', '다시 로그인해 주세요.')
-    setSession(await response.json() as AuthTokens)
+    const tokens = requireTokens(await readResponse<AuthTokens>(response, true))
+    setSession(tokens)
   })().finally(() => { refreshing = null })
   await refreshing
 }
@@ -40,28 +63,25 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   let response: Response
   try { response = await request(); if (response.status === 401 && session?.refreshToken) { await refresh(); response = await request() } }
   catch (e) { if (e instanceof ApiError || e instanceof DOMException && e.name === 'AbortError') throw e; throw new ApiError(0, 'NETWORK_ERROR', '연결하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.') }
-  if (response.status === 204) return undefined as T
-  const value = await response.json()
-  if (!response.ok) throw new ApiError(response.status, value.error?.code || 'REQUEST_FAILED', value.error?.message || '요청에 실패했어요.', value.error?.details)
-  return value as T
+  return readResponse<T>(response, options.expectJson)
 }
 export async function allPages<T>(path: string): Promise<T[]> {
   const items: T[] = []; let cursor: string | null = null
   do {
-    const page: { items: T[]; nextCursor: string | null } = await api(`${path}${path.includes('?') ? '&' : '?'}limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`)
+    const page: { items: T[]; nextCursor: string | null } = await api(`${path}${path.includes('?') ? '&' : '?'}limit=100${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`, { expectJson: true })
     items.push(...page.items); cursor = page.nextCursor
   } while (cursor)
   return items
 }
 export async function demoLogin(displayName: string, merchant = false) {
   const redirectUri = `${window.location.origin}/`
-  const { authorizationCode } = await api<{ authorizationCode: string }>('/dev/login-codes', { method: 'POST', body: { displayName, merchant, redirectUri } })
-  const tokens = await api<AuthTokens>('/auth/login', { method: 'POST', body: { provider: 'demo', authorizationCode, redirectUri } }); setSession(tokens); return tokens.user
+  const { authorizationCode } = await api<{ authorizationCode: string }>('/dev/login-codes', { method: 'POST', body: { displayName, merchant, redirectUri }, expectJson: true })
+  const tokens = requireTokens(await api<AuthTokens>('/auth/login', { method: 'POST', body: { provider: 'demo', authorizationCode, redirectUri }, expectJson: true })); setSession(tokens); return tokens.user
 }
 export async function localLogin(email: string, password: string) {
   const redirectUri = `${window.location.origin}/`
-  const { authorizationCode } = await api<{ authorizationCode: string }>('/auth/local-codes', { method: 'POST', body: { email, password, redirectUri } })
-  const tokens = await api<AuthTokens>('/auth/login', { method: 'POST', body: { provider: 'local', authorizationCode, redirectUri } }); setSession(tokens); return tokens.user
+  const { authorizationCode } = await api<{ authorizationCode: string }>('/auth/local-codes', { method: 'POST', body: { email, password, redirectUri }, expectJson: true })
+  const tokens = requireTokens(await api<AuthTokens>('/auth/login', { method: 'POST', body: { provider: 'local', authorizationCode, redirectUri }, expectJson: true })); setSession(tokens); return tokens.user
 }
 export async function logout() {
   try { if (session?.refreshToken) await api('/auth/logout', { method: 'POST', body: { refreshToken: session.refreshToken } }) }

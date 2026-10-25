@@ -12,12 +12,27 @@
 
 /* Each row moves independently; collapsed rows keep their order for undo. */
 .food-list { display: block; }
-.food-row { position: relative; height: 132px; margin-bottom: 12px; background: #ef6b76; transition: height .3s ease, margin-bottom .3s ease, opacity .3s ease; }
+.food-row { position: relative; height: 132px; margin-bottom: 12px; background: #ef6b76; transition: height .17s ease, margin-bottom .17s ease, opacity .17s ease; }
 .food-row:last-child { margin-bottom: 0; }
 .food-row.is-collapsed { height: 0; margin-bottom: 0; opacity: 0; pointer-events: none; }
-.food-card { height: 132px; min-height: 132px; position: relative; transition: transform .26s cubic-bezier(.2,.8,.2,1), opacity .26s ease; will-change: transform; }
+.food-card { height: 132px; min-height: 132px; position: relative; transition: transform .2s cubic-bezier(.2,.8,.2,1), opacity .2s ease; will-change: transform; }
 .food-row.is-exiting .food-card, .food-row.is-collapsed .food-card { transform: translateX(-110%); opacity: .45; }
 .swipe-reveal { position: absolute; inset: 0 0 0 auto; width: 100px; display: grid; place-items: center; color: #fff; font-size: 18px; }
 .excluded-tray { margin: 22px 0 0; }.excluded-tray h2 { margin: 0 0 9px; color: #986f70; font-size: 15px; font-weight: 400; }
 .excluded-tray>div { display: flex; flex-wrap: wrap; gap: 8px; }.onboarding .excluded-tray button { padding: 7px 10px; min-height: 30px; border: 1px solid #edb4b8; border-radius: 10px; background: #fff1f1; color: #904e52; font-size: 12px; }
 @media (prefers-reduced-motion: reduce) { .food-row, .food-card { transition-duration: .01ms !important; } }
+
+.live-vote-screen .food-card { width: 100%; }
+.live-vote-screen .food-info { overflow: hidden; }
+.live-vote-screen .food-controls { white-space: nowrap; }
+.live-vote-screen .excluded-tray span { padding: 7px 10px; color: #987773; font-size: 12px; }
+.live-vote-actions { display: grid; gap: 10px; margin: 22px 0 12px; }
+.live-vote-actions p { margin: 0; color: #987773; font-size: 13px; }
+.live-vote-screen .error-box { margin: 12px 0; }
+.start-screen .start-login-error { color: #a3424c; font-size: 13px; }
+.start-screen .start-merchant-link { display: block; margin: 12px auto 0; padding: 7px 12px; border: 0; background: transparent; color: #8a5152; font-size: 12px; text-decoration: underline; }
+.start-screen .start-merchant-link:hover { background: transparent; }
+.live-vote-screen .excluded-tray>div { display: grid; gap: 8px; }
+.live-vote-screen .excluded-row { display: flex; align-items: center; gap: 16px; min-height: 44px; padding: 8px 10px; border-radius: 12px; background: #fff2f3; color: #987773; font-size: 12px; }
+.live-vote-screen .excluded-name { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; line-height: 1.45; }
+.onboarding .live-vote-screen .excluded-row button { flex: 0 0 auto; white-space: nowrap; margin-left: auto; }

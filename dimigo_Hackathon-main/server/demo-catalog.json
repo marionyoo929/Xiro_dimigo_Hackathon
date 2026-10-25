@@ -178,6 +178,12 @@
       "categoryId": "salad",
       "salesStatus": "AVAILABLE"
     },
+    { "id": "demo-city-spicy", "restaurantId": "demo-city-b", "name": "매운 아부라소바", "description": "소바 차슈 계란", "price": 13900, "categoryId": "spicy", "salesStatus": "AVAILABLE" },
+    { "id": "demo-city-stew", "restaurantId": "demo-city-a", "name": "김치찌개", "description": "잘 익은 김치와 돼지고기", "price": 11000, "categoryId": "stew", "salesStatus": "AVAILABLE" },
+    { "id": "demo-city-sushi", "restaurantId": "demo-city-c", "name": "초밥", "description": "신선한 생선과 초대리 밥", "price": 20000, "categoryId": "sushi", "salesStatus": "AVAILABLE" },
+    { "id": "demo-city-burger", "restaurantId": "demo-city-b", "name": "햄버거", "description": "소고기 패티와 신선한 채소", "price": 12000, "categoryId": "burger", "salesStatus": "AVAILABLE" },
+    { "id": "demo-city-rice", "restaurantId": "demo-city-a", "name": "볶음밥", "description": "고슬고슬한 밥과 달걀", "price": 10000, "categoryId": "rice", "salesStatus": "AVAILABLE" },
+    { "id": "demo-city-pizza", "restaurantId": "demo-city-c", "name": "피자", "description": "치즈와 토마토 소스", "price": 25000, "categoryId": "pizza", "salesStatus": "AVAILABLE" },
     {
       "id": "demo-city-soldout",
       "restaurantId": "demo-city-a",
@@ -250,6 +256,12 @@
       "categoryId": "salad",
       "salesStatus": "AVAILABLE"
     },
+    { "id": "demo-wadong-spicy", "restaurantId": "demo-wadong-b", "name": "매운 아부라소바", "description": "소바 차슈 계란", "price": 13900, "categoryId": "spicy", "salesStatus": "AVAILABLE" },
+    { "id": "demo-wadong-stew", "restaurantId": "demo-wadong-a", "name": "김치찌개", "description": "잘 익은 김치와 돼지고기", "price": 11000, "categoryId": "stew", "salesStatus": "AVAILABLE" },
+    { "id": "demo-wadong-sushi", "restaurantId": "demo-wadong-c", "name": "초밥", "description": "신선한 생선과 초대리 밥", "price": 20000, "categoryId": "sushi", "salesStatus": "AVAILABLE" },
+    { "id": "demo-wadong-burger", "restaurantId": "demo-wadong-b", "name": "햄버거", "description": "소고기 패티와 신선한 채소", "price": 12000, "categoryId": "burger", "salesStatus": "AVAILABLE" },
+    { "id": "demo-wadong-rice", "restaurantId": "demo-wadong-a", "name": "볶음밥", "description": "고슬고슬한 밥과 달걀", "price": 10000, "categoryId": "rice", "salesStatus": "AVAILABLE" },
+    { "id": "demo-wadong-pizza", "restaurantId": "demo-wadong-c", "name": "피자", "description": "치즈와 토마토 소스", "price": 25000, "categoryId": "pizza", "salesStatus": "AVAILABLE" },
     {
       "id": "demo-wadong-soldout",
       "restaurantId": "demo-wadong-a",

@@ -3,11 +3,12 @@ import { api, allPages, subscribe, type StreamEvent } from '../lib/api'
 import type { CategoryCandidate, Party, RestaurantCandidate, RestrictionCollection, ReviewProgress, User, Job, InviteLink } from '../types/api'
 import { Header, stateLabel } from '../App'
 import LiveReview from './LiveReview'
+import LiveCategoryReview from './LiveCategoryReview'
 import DietaryRestrictions from './DietaryRestrictions'
 import OrderPage from './OrderPage'
 import PlaceMap from '../components/PlaceMap'
 
-export default function LiveParty({ id, user, demo, onHome, onEdit }: { id: string; user: User; demo: boolean; onHome: () => void; onEdit: (party: Party) => void }) {
+export default function LiveParty({ id, user, onHome, onEdit }: { id: string; user: User; onHome: () => void; onEdit: (party: Party) => void }) {
   const [party, setParty] = useState<Party | null>(null), [candidates, setCandidates] = useState<(CategoryCandidate | RestaurantCandidate)[]>([]), [progress, setProgress] = useState<ReviewProgress | null>(null)
   const [restrictions, setRestrictions] = useState<RestrictionCollection | null>(null), [job, setJob] = useState<Job | null>(null), [error, setError] = useState(''), [busy, setBusy] = useState(false), [connected, setConnected] = useState(false)
   const [invite, setInvite] = useState(''), [qr, setQr] = useState(''), [notice, setNotice] = useState(''), [editingRestrictions, setEditingRestrictions] = useState(false), [displayName, setDisplayName] = useState('')
@@ -42,10 +43,10 @@ export default function LiveParty({ id, user, demo, onHome, onEdit }: { id: stri
     const focus = () => void load(); window.addEventListener('focus', focus)
     return () => { mounted.current = false; sequence.current++; stop(); window.removeEventListener('focus', focus) }
   }, [base, load])
-  const run = async (action: () => Promise<void>) => {
-    if (actionLock.current) return
+  const run = async (action: () => Promise<void>): Promise<boolean> => {
+    if (actionLock.current) return false
     actionLock.current = true; setBusy(true); setError(''); setNotice('')
-    try { await action(); await load() } catch (e) { setError((e as Error).message); await load() } finally { actionLock.current = false; if (mounted.current) setBusy(false) }
+    try { await action(); await load(); return true } catch (e) { setError((e as Error).message); await load(); return false } finally { actionLock.current = false; if (mounted.current) setBusy(false) }
   }
   if (editingRestrictions) return <DietaryRestrictions onBack={() => { setEditingRestrictions(false); void load() }} />
   if (!party) return <main className="onboarding flow-screen"><Header title="파티" onHome={onHome} /><p role="status">{error || '파티를 불러오는 중…'}</p><button className="secondary" onClick={() => void load()}>다시 불러오기</button></main>
@@ -59,14 +60,14 @@ export default function LiveParty({ id, user, demo, onHome, onEdit }: { id: stri
     setInvite(url.toString()); try { await navigator.clipboard.writeText(url.toString()); setNotice('초대 링크를 복사했어요.') } catch { setNotice('아래 초대 링크를 복사해 주세요.') }
   })
   const location = { id: party.id, name: party.location.address || party.title, address: party.location.address || '', latitude: party.location.latitude, longitude: party.location.longitude, url: '', category: '' }
-  return <main className="onboarding flow-screen"><Header title={party.title} user={user} onHome={onHome} /><div className="stage-line"><span>{stateLabel(party.state)}</span><small className={connected ? 'connection-on' : 'connection-off'}>{connected ? '실시간 연결됨' : '연결 복구 중'}</small></div>
-    {demo && <p className="mode-label">시연 모드 · 서버 DB에 저장된 가상 매장</p>}
+  if (party.state === 'CATEGORY_REVIEW' && progress) return <LiveCategoryReview key={progress.candidateSetId} party={party} candidates={candidates.filter((c): c is CategoryCandidate => 'category' in c)} progress={progress} busy={busy} isHost={isHost} nickname={user.displayName} error={error} onHome={onHome} onCommand={command} onRefresh={load} />
+  return <main className={`onboarding flow-screen ${party.state === 'WAITING' ? 'waiting-screen' : ''}`}><Header title={party.title} user={user} onHome={onHome} /><div className="stage-line"><span>{stateLabel(party.state)}</span><small className={connected ? 'connection-on' : 'connection-off'}>{connected ? '실시간 연결됨' : '연결 복구 중'}</small></div>
     {error && <p className="error-box" role="alert">{error}</p>}{notice && <p role="status" className="notice-box">{notice}</p>}
     {party.state === 'WAITING' && <>
-      <section className="summary-card"><h1>함께 먹을 준비됐나요?</h1><p>{party.location.address}</p><p>반경 {party.searchRadiusMeters}m · 1인 {party.budgetPerPerson?.toLocaleString() || '제한 없음'}{party.budgetPerPerson !== null && '원 이하'}</p><div className="button-row">{isHost && <button className="secondary" disabled={busy} onClick={() => onEdit(party)}>장소·조건 변경</button>}{isHost && <button className="secondary" disabled={busy} onClick={share}>초대 링크 복사</button>}</div>{invite && <label>초대 링크<input aria-label="초대 링크" readOnly value={invite} onFocus={e => e.target.select()} /></label>}</section>
-      <section className="summary-card"><h2>내 식사 제한 확인</h2><p>{restrictions?.items.length ? restrictions.items.map(r => r.label).join(', ') : '등록한 식사 제한이 없어요.'}</p><button className="text-button" onClick={() => setEditingRestrictions(true)}>제한 목록 수정</button><button className="primary" disabled={busy || !restrictions} onClick={() => void confirm()}>{me.restrictionConfirmed ? '제한 확인 취소' : '최신 식사 제한 확인'}</button></section>
-      <section><h2>참가자 {party.memberCount}/{party.maxMembers}</h2><ul className="member-list">{party.members.map(m => <li key={m.id}><span>{m.displayName}{m.role === 'HOST' ? ' · 방장' : ''}<small>{m.connectionStatus === 'ONLINE' ? '접속 중' : '오프라인'}</small></span><small>{m.restrictionConfirmed ? '제한 확인 완료' : '제한 확인 대기'}</small>{isHost && m.id !== me.id && <button className="text-button danger" disabled={busy} onClick={() => void command(`/members/${m.id}`, undefined, undefined, 'DELETE')}>내보내기</button>}</li>)}</ul>
-        <form className="button-row" onSubmit={e => { e.preventDefault(); if (displayName.trim()) void command('/members/me', { displayName: displayName.trim() }, undefined, 'PATCH') }}><input aria-label="내 닉네임 변경" placeholder={me.displayName} maxLength={30} value={displayName} onChange={e => setDisplayName(e.target.value)} /><button className="secondary" disabled={busy || !displayName.trim()}>이름 변경</button></form></section>
+      <section className="summary-card waiting-summary"><h1>함께 먹을 준비됐나요?</h1><p className="waiting-location">{party.location.address}</p><p className="waiting-conditions">반경 {party.searchRadiusMeters}m <span aria-hidden="true">·</span> 1인 {party.budgetPerPerson?.toLocaleString() || '제한 없음'}{party.budgetPerPerson !== null && '원 이하'}</p><div className="button-row waiting-actions">{isHost && <button className="secondary" disabled={busy} onClick={() => onEdit(party)}>장소·조건 변경</button>}{isHost && <button className="secondary" disabled={busy} onClick={share}>초대 링크 복사</button>}</div>{invite && <label>초대 링크<input aria-label="초대 링크" readOnly value={invite} onFocus={e => e.target.select()} /></label>}</section>
+      <section className="summary-card waiting-restrictions"><h2>내 식사 제한 확인</h2><p>{restrictions?.items.length ? restrictions.items.map(r => r.label).join(', ') : '등록한 식사 제한이 없어요.'}</p><button className="text-button" onClick={() => setEditingRestrictions(true)}>제한 목록 수정</button><button className="primary restriction-confirm-button" disabled={busy || !restrictions} onClick={() => void confirm()}>{me.restrictionConfirmed ? '제한 확인 취소' : '최신 식사 제한 확인'}</button></section>
+      <section className="waiting-members"><h2>참가자 {party.memberCount}/{party.maxMembers}</h2><ul className="member-list">{party.members.map(m => <li key={m.id}><div className="member-identity"><div className="member-name-row"><span className="member-name" title={m.displayName}>{m.displayName}</span>{m.role === 'HOST' && <span className="member-host">방장</span>}</div><small>{m.connectionStatus === 'ONLINE' ? '접속 중' : '오프라인'}</small></div><span className={`member-readiness ${m.restrictionConfirmed ? 'is-ready' : ''}`}>{m.restrictionConfirmed ? '제한 확인 완료' : '제한 확인 대기'}</span>{isHost && m.id !== me.id && <button className="text-button danger" disabled={busy} onClick={() => void command(`/members/${m.id}`, undefined, undefined, 'DELETE')}>내보내기</button>}</li>)}</ul>
+        <form className="button-row member-name-form" onSubmit={e => { e.preventDefault(); if (displayName.trim()) void command('/members/me', { displayName: displayName.trim() }, undefined, 'PATCH') }}><input aria-label="내 닉네임 변경" placeholder={me.displayName} maxLength={30} value={displayName} onChange={e => setDisplayName(e.target.value)} /><button className="secondary" disabled={busy || !displayName.trim()}>이름 변경</button></form></section>
       {job?.status === 'FAILED' && <p className="error-box" role="status">{job.error?.message}</p>}
       {isHost ? <button className="primary" disabled={busy || party.members.some(m => !m.restrictionConfirmed)} onClick={() => void command('/category-candidates/generate')}>음식 후보 생성</button> : <p className="muted">방장이 음식 후보를 생성할 때까지 기다려 주세요.</p>}
       {!isHost && <button className="text-button danger" disabled={busy} onClick={() => void run(async () => { await api(`${base}/members/${me.id}`, { method: 'DELETE' }); onHome() })}>파티 나가기</button>}

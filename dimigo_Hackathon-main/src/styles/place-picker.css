@@ -80,5 +80,26 @@
 .waiting-address { margin: 0; font-size: 14px; line-height: 1.6; }
 .waiting-place-link { color: #b15560; }
 .demo-data-notice { margin: 0; font-size: 12px; line-height: 1.6; color: #997577; }
+.place-screen { min-height: 100svh; overflow-y: auto; overflow-x: hidden; }
+.place-header { padding-left: 20px; padding-right: 20px; }
+.place-sheet { padding: 12px 20px 20px; }
+.selected-place-heading { min-width: 0; gap: 8px; }
+.selected-place-heading h2 { min-width: 0; }
+.selected-address img { flex: 0 0 14px; width: 14px; height: 14px; margin-top: 2px; object-fit: contain; }
+.radius-heading { flex-wrap: wrap; margin-top: 19px; }
+.radius-heading label { display: flex; align-items: center; gap: 4px; }
+.meeting-conditions { margin: 16px 0 0; }
+.meeting-conditions summary { min-height: 60px; padding: 10px 13px; }
+.meeting-conditions summary>span:nth-child(2) { min-width: 0; }
+.meeting-conditions small { overflow-wrap: anywhere; }
+.conditions-icon { flex: 0 0 32px; width: 32px; height: 32px; border-radius: 0; background: transparent; }
+.place-bottom-nav { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+.onboarding .place-bottom-nav .place-create { min-height: 56px; }
+.place-create>img { position: absolute; left: 50%; top: -30px; transform: translateX(-50%); display: block; width: 67px; height: 67px; object-fit: contain; filter: drop-shadow(0 0 0 #fff); }
+.place-create:disabled>img { opacity: .55; }
+.place-create small { bottom: 0; white-space: nowrap; }
+.meeting-map-pin { width: 37px; height: 47px; margin-bottom: 8px; border: 0; border-radius: 0; transform: none; box-shadow: none; background: url('/images/map%20point.png') center / contain no-repeat; }
+.meeting-map-pin::after { display: none; }
+@media (max-width: 360px) { .place-header { padding-left: 17px; padding-right: 17px; } }
 @media (max-height: 740px) { .place-map-area { min-height: 220px; height: max(220px, calc(100svh - 460px)); }.sheet-handle { margin-bottom: 16px; } }
 @media (max-width: 360px) { .place-sheet { padding-left: 17px; padding-right: 17px; }.selected-place-heading h2 { font-size: 22px; } }

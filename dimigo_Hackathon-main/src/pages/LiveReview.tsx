@@ -6,7 +6,7 @@ import { foods } from '../data/foods'
 type Candidate = CategoryCandidate | RestaurantCandidate
 export default function LiveReview({ party, candidates, progress, busy, isHost, onCommand, onRefresh }: {
   party: Party; candidates: Candidate[]; progress: ReviewProgress; busy: boolean; isHost: boolean
-  onCommand: (path: string, body?: unknown, version?: number, method?: string) => Promise<void>; onRefresh: () => Promise<void>
+  onCommand: (path: string, body?: unknown, version?: number, method?: string) => Promise<boolean>; onRefresh: () => Promise<void>
 }) {
   const kind = party.state === 'CATEGORY_REVIEW' ? 'category' : 'restaurant', label = kind === 'category' ? '음식' : '식당'
   const [expanded, setExpanded] = useState<Record<string, string>>({}), [notice, setNotice] = useState('')
