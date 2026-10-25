@@ -1,0 +1,5753 @@
+openapi: 3.1.0
+info:
+  title: 시로 서비스 API
+  version: 1.0.0-draft
+  description: 2026-10-24 요구사항 기반 구현 전 제안 명세. 앱/모바일 웹 공용 API. 내부 결제 없음. 식당 확인이 주문 수락 및 수수료 근거 기준이다. x-policy-status=provisional은
+    임시 정책. 상세 상태 흐름·정책은 시로_API_명세서_v1.md 참조. 모든 날짜는 UTC, 금액은 KRW 정수.
+servers:
+- url: /api/v1
+  description: 배포 호스트 기준 상대 경로; 운영 도메인 미정
+security:
+- bearerAuth: []
+tags:
+- name: 인증
+- name: 기준 정보
+- name: 식사 제한
+- name: 파티
+- name: 초대·참가자
+- name: 카테고리 검토
+- name: 식당 검토
+- name: 작업
+- name: QR 연결
+- name: 주문
+- name: 사업자 매장
+- name: 사업자 메뉴
+- name: 사업자 QR
+- name: 사업자 주문
+- name: 수수료
+- name: 실시간
+paths:
+  /auth/login:
+    post:
+      operationId: login
+      summary: 인증 코드로 로그인
+      tags:
+      - 인증
+      description: 배포에서 허용된 공급자의 코드를 검증한다. redirectUri 허용 목록, PKCE·state·nonce는 인증 연동에서 검증한다. 공급자 목록은 미정.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      security: []
+      x-policy-status: provisional
+  /auth/refresh:
+    post:
+      operationId: refreshTokens
+      summary: 사용자 토큰 회전
+      tags:
+      - 인증
+      description: 본문의 refreshToken으로 인증하고 이전 refreshToken을 폐기한다. 게스트 refresh는 제공하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      security: []
+  /auth/logout:
+    post:
+      operationId: logout
+      summary: 사용자 세션 종료
+      tags:
+      - 인증
+      description: 인증 주체 소유의 refreshToken을 폐기한다. 이미 폐기된 동일 토큰에도 204. accessToken 세션도 무효화한다.
+      responses:
+        '204':
+          description: 성공
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+  /me:
+    get:
+      operationId: getMe
+      summary: 본인 정보 조회
+      tags:
+      - 인증
+      description: 모든 인증 주체. 다른 사용자 조회 경로는 제공하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /guest-sessions:
+    post:
+      operationId: createPartyGuestSession
+      summary: 초대 게스트 생성 및 파티 입장
+      tags:
+      - 인증
+      description: 유효 초대와 WAITING·정원을 검증하고 게스트 및 멤버를 함께 생성한다. 별도 join 불필요. 해당 파티만 접근. 종료 또는 발급 후 24시간에 만료.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuestSession'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '410':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestSessionRequest'
+      security: []
+      x-policy-status: provisional
+  /food-categories:
+    get:
+      operationId: listFoodCategories
+      summary: 음식 카테고리 코드 목록
+      tags:
+      - 기준 정보
+      description: 음식 카테고리 코드 목록
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodePage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      x-policy-status: provisional
+  /ingredients:
+    get:
+      operationId: listIngredients
+      summary: 재료 코드 목록
+      tags:
+      - 기준 정보
+      description: 재료 코드 목록
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodePage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      x-policy-status: provisional
+  /restriction-targets:
+    get:
+      operationId: listRestrictionTargets
+      summary: 식사 제한 대상 코드 목록
+      tags:
+      - 기준 정보
+      description: 식사 제한 대상 코드 목록
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictionTargetPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      x-policy-status: provisional
+  /me/dietary-restrictions:
+    get:
+      operationId: getDietaryRestrictions
+      summary: 본인 식사 제한 조회
+      tags:
+      - 식사 제한
+      description: 본인만 접근. 사용자 또는 게스트. 수정은 제한 collection revision의 If-Match 사용. WAITING 파티의 확인을 해제하고 진행 중 파티 제한
+        스냅샷은 유지한다. QR_GUEST의 DRAFT 주문 제한 변경은 본인 메뉴 완료를 해제하고 Order version을 증가시킨다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictionCollection'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+    put:
+      operationId: replaceDietaryRestrictions
+      summary: 식사 제한 전체 교체
+      tags:
+      - 식사 제한
+      description: 본인만 접근. 사용자 또는 게스트. 수정은 제한 collection revision의 If-Match 사용. WAITING 파티의 확인을 해제하고 진행 중 파티 제한
+        스냅샷은 유지한다. QR_GUEST의 DRAFT 주문 제한 변경은 본인 메뉴 완료를 해제하고 Order version을 증가시킨다. targetCode 중복은 422.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictionCollection'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceRestrictionsRequest'
+      x-policy-status: provisional
+    post:
+      operationId: addDietaryRestriction
+      summary: 식사 제한 추가
+      tags:
+      - 식사 제한
+      description: 본인만 접근. 사용자 또는 게스트. 수정은 제한 collection revision의 If-Match 사용. WAITING 파티의 확인을 해제하고 진행 중 파티 제한
+        스냅샷은 유지한다. QR_GUEST의 DRAFT 주문 제한 변경은 본인 메뉴 완료를 해제하고 Order version을 증가시킨다. 같은 type/targetCode 중복은 409.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictionCollection'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestrictionInput'
+  /me/dietary-restrictions/{restrictionId}:
+    delete:
+      operationId: deleteDietaryRestriction
+      summary: 본인 제한 삭제
+      tags:
+      - 식사 제한
+      description: 본인만 접근. 사용자 또는 게스트. 수정은 제한 collection revision의 If-Match 사용. WAITING 파티의 확인을 해제하고 진행 중 파티 제한
+        스냅샷은 유지한다. QR_GUEST의 DRAFT 주문 제한 변경은 본인 메뉴 완료를 해제하고 Order version을 증가시킨다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictionCollection'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restrictionId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IfMatch'
+  /parties:
+    post:
+      operationId: createParty
+      summary: 파티 생성
+      tags:
+      - 파티
+      description: USER만 생성. 생성자를 HOST 멤버로 등록하고 WAITING 반환. 제한 확인은 별도 수행.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePartyRequest'
+  /parties/{partyId}:
+    get:
+      operationId: getParty
+      summary: 파티 상태 스냅샷
+      tags:
+      - 파티
+      description: 해당 파티 참가자. 멤버·후보 집합 메타데이터와 현재 주문 ID를 반환한다. 개인 후보 플래그는 후보 목록을 별도 조회한다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    patch:
+      operationId: updateParty
+      summary: 파티 조건 수정
+      tags:
+      - 파티
+      description: 방장, WAITING에서만 가능. Party version 사용.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePartyRequest'
+    delete:
+      operationId: cancelParty
+      summary: 파티 취소
+      tags:
+      - 파티
+      description: 방장, 제출 전 WAITING~ORDERING에서만 가능. Party version. 논리 취소하며 DRAFT 주문과 진행 중 Job도 취소한다.
+      responses:
+        '204':
+          description: 성공
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IfMatch'
+      x-policy-status: provisional
+  /me/parties:
+    get:
+      operationId: listMyParties
+      summary: 참여 중 또는 참여했던 파티 목록
+      tags:
+      - 파티
+      description: USER는 본인 파티만, PARTY_GUEST는 범위 내 파티만. ORDER_GUEST 접근 불가.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartyPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+  /parties/{partyId}/invite-links:
+    post:
+      operationId: createInviteLink
+      summary: 파티 초대 링크 발급
+      tags:
+      - 초대·참가자
+      description: 방장, WAITING. 기본 24시간. 파티 단계가 시작되면 만료 전이라도 입장 불가.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteLink'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteLinkRequest'
+      x-policy-status: provisional
+  /party-invites/{inviteToken}/join:
+    post:
+      operationId: joinParty
+      summary: 계정 사용자 초대 참여
+      tags:
+      - 초대·참가자
+      description: USER만. WAITING·정원 검사. 이미 참여한 동일 계정은 기존 멤버 반환. 게스트는 guest-sessions 사용.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '410':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: inviteToken
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      x-policy-status: provisional
+  /parties/{partyId}/members:
+    get:
+      operationId: listPartyMembers
+      summary: 공개 멤버 목록
+      tags:
+      - 초대·참가자
+      description: 참가자. 식사 제한 상세 및 개인 소거 기록은 반환하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+  /parties/{partyId}/members/{memberId}:
+    delete:
+      operationId: removePartyMember
+      summary: 탈퇴 또는 강퇴
+      tags:
+      - 초대·참가자
+      description: WAITING에서 본인 탈퇴 또는 방장 강퇴. HOST 멤버 제거 불가. Party 잠금으로 후보 생성 시작과 경합을 제어한다.
+      responses:
+        '204':
+          description: 성공
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+  /parties/{partyId}/members/me:
+    patch:
+      operationId: updateMyPartyMember
+      summary: 본인 표시명 변경
+      tags:
+      - 초대·참가자
+      description: 참가자 본인, WAITING에서만 표시명 수정.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberRequest'
+      x-policy-status: provisional
+  /parties/{partyId}/members/me/dietary-confirmation:
+    put:
+      operationId: confirmMyDietaryRestrictions
+      summary: 현재 식사 제한 확인
+      tags:
+      - 식사 제한
+      description: 본인, WAITING. 최신 restrictionRevision과 일치해야 한다. 빈 목록도 확인 필요. confirmed=false는 확인 취소. 같은 요청은 멱등.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietaryConfirmationRequest'
+      x-policy-status: provisional
+  /parties/{partyId}/category-candidates/generate:
+    post:
+      operationId: generateCategoryCandidates
+      summary: 카테고리 후보 비동기 생성
+      tags:
+      - 카테고리 검토
+      description: 방장. WAITING에서 Job 접수. 게시할 후보는 1개 이상이어야 한다. 실패하면 WAITING로 복원. 전원 최신 제한 확인 필요.
+      responses:
+        '202':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          headers:
+            Location:
+              description: Job 조회 상대 경로
+              schema:
+                type: string
+              example: /api/v1/jobs/job_123
+            Retry-After:
+              schema:
+                type: string
+              example: '2'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      x-policy-status: provisional
+  /parties/{partyId}/category-candidates:
+    get:
+      operationId: listCategoryCandidates
+      summary: 카테고리 후보 목록
+      tags:
+      - 카테고리 검토
+      description: 참가자. ACTIVE/ELIMINATED를 모두 반환한다. 후보 집합은 게시 후 고정하며 viewedByMe/eliminatedByMe는 요청 주체 기준이다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryCandidatePage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+  /parties/{partyId}/category-candidates/{candidateId}:
+    get:
+      operationId: getCategoryCandidate
+      summary: 카테고리 후보 상세
+      tags:
+      - 카테고리 검토
+      description: 참가자. 지정 파티·후보 집합 소속을 검증하며 타인 소거 기록은 반환하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryCandidate'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /parties/{partyId}/category-candidates/{candidateId}/view:
+    post:
+      operationId: viewCategoryCandidate
+      summary: 카테고리 후보 최초 열람 기록
+      tags:
+      - 카테고리 검토
+      description: 참가자. CATEGORY_REVIEW에서 실제 화면 노출 시 호출. 동일 후보·본인 최초 열람만 진행도에 반영한다. 반복 요청은 멱등.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /parties/{partyId}/category-candidates/{candidateId}/elimination:
+    put:
+      operationId: eliminateCategoryCandidate
+      summary: 본인 카테고리 소거
+      tags:
+      - 카테고리 검토
+      description: 참가자 본인, CATEGORY_REVIEW. 본인이 검토 완료했다면 먼저 완료 취소. 개인별 유일 소거 기록을 생성/삭제한다. 다른 소거가 남으면 계속 ELIMINATED.
+        전체 상태가 변경되면 해당 단계 전원 완료를 해제한다. 반복 요청은 멱등. 타인 ID는 받지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EliminationResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+    delete:
+      operationId: restoreCategoryCandidate
+      summary: 본인 카테고리 소거 취소
+      tags:
+      - 카테고리 검토
+      description: 참가자 본인, CATEGORY_REVIEW. 본인이 검토 완료했다면 먼저 완료 취소. 개인별 유일 소거 기록을 생성/삭제한다. 다른 소거가 남으면 계속 ELIMINATED.
+        전체 상태가 변경되면 해당 단계 전원 완료를 해제한다. 반복 요청은 멱등. 타인 ID는 받지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EliminationResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+  /parties/{partyId}/category-review/progress:
+    get:
+      operationId: getCategoryReviewProgress
+      summary: 카테고리 검토 진행도
+      tags:
+      - 카테고리 검토
+      description: 참가자. totalCount는 소거 후보를 포함한 고정 전체 수. 오프라인 멤버도 완료 대상에서 제외하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewProgress'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /parties/{partyId}/category-review/complete:
+    post:
+      operationId: completeCategoryReview
+      summary: 본인 카테고리 검토 완료
+      tags:
+      - 카테고리 검토
+      description: 본인, CATEGORY_REVIEW. 전체 후보 최초 열람 완료 필요. 반복 완료는 멱등.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewProgress'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    delete:
+      operationId: reopenCategoryReview
+      summary: 본인 카테고리 검토 완료 취소
+      tags:
+      - 카테고리 검토
+      description: 본인, CATEGORY_REVIEW. 확정 전만 가능. 열람 기록은 유지하며 반복 취소는 멱등.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewProgress'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+  /parties/{partyId}/category-review/finalize:
+    post:
+      operationId: finalizeCategoryReview
+      summary: 카테고리 검토 단계 확정
+      tags:
+      - 카테고리 검토
+      description: 방장, Party version. CATEGORY_REVIEW에서 전원 명시적 완료 및 활성 후보 1개 이상 검증. CATEGORY_FINALIZED로 전환. 다음 작업은
+        별도 호출.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      x-policy-status: provisional
+  /parties/{partyId}/restaurant-candidates/generate:
+    post:
+      operationId: generateRestaurantCandidates
+      summary: 식당 후보 비동기 생성
+      tags:
+      - 식당 검토
+      description: 방장. CATEGORY_FINALIZED에서 Job 접수. 게시할 후보는 1개 이상이어야 한다. 실패하면 CATEGORY_FINALIZED로 복원. 확정 카테고리 스냅샷만
+        사용.
+      responses:
+        '202':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          headers:
+            Location:
+              description: Job 조회 상대 경로
+              schema:
+                type: string
+              example: /api/v1/jobs/job_123
+            Retry-After:
+              schema:
+                type: string
+              example: '2'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      x-policy-status: provisional
+  /parties/{partyId}/restaurant-candidates:
+    get:
+      operationId: listRestaurantCandidates
+      summary: 식당 후보 목록
+      tags:
+      - 식당 검토
+      description: 참가자. ACTIVE/ELIMINATED를 모두 반환한다. 후보 집합은 게시 후 고정하며 viewedByMe/eliminatedByMe는 요청 주체 기준이다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCandidatePage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+  /parties/{partyId}/restaurant-candidates/{candidateId}:
+    get:
+      operationId: getRestaurantCandidate
+      summary: 식당 후보 상세
+      tags:
+      - 식당 검토
+      description: 참가자. 지정 파티·후보 집합 소속을 검증하며 타인 소거 기록은 반환하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCandidate'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /parties/{partyId}/restaurant-candidates/{candidateId}/view:
+    post:
+      operationId: viewRestaurantCandidate
+      summary: 식당 후보 최초 열람 기록
+      tags:
+      - 식당 검토
+      description: 참가자. RESTAURANT_REVIEW에서 실제 화면 노출 시 호출. 동일 후보·본인 최초 열람만 진행도에 반영한다. 반복 요청은 멱등.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /parties/{partyId}/restaurant-candidates/{candidateId}/elimination:
+    put:
+      operationId: eliminateRestaurantCandidate
+      summary: 본인 식당 소거
+      tags:
+      - 식당 검토
+      description: 참가자 본인, RESTAURANT_REVIEW. 본인이 검토 완료했다면 먼저 완료 취소. 개인별 유일 소거 기록을 생성/삭제한다. 다른 소거가 남으면 계속 ELIMINATED.
+        전체 상태가 변경되면 해당 단계 전원 완료를 해제한다. 반복 요청은 멱등. 타인 ID는 받지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EliminationResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+    delete:
+      operationId: restoreRestaurantCandidate
+      summary: 본인 식당 소거 취소
+      tags:
+      - 식당 검토
+      description: 참가자 본인, RESTAURANT_REVIEW. 본인이 검토 완료했다면 먼저 완료 취소. 개인별 유일 소거 기록을 생성/삭제한다. 다른 소거가 남으면 계속 ELIMINATED.
+        전체 상태가 변경되면 해당 단계 전원 완료를 해제한다. 반복 요청은 멱등. 타인 ID는 받지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EliminationResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+  /parties/{partyId}/restaurant-review/progress:
+    get:
+      operationId: getRestaurantReviewProgress
+      summary: 식당 검토 진행도
+      tags:
+      - 식당 검토
+      description: 참가자. totalCount는 소거 후보를 포함한 고정 전체 수. 오프라인 멤버도 완료 대상에서 제외하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewProgress'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /parties/{partyId}/restaurant-review/complete:
+    post:
+      operationId: completeRestaurantReview
+      summary: 본인 식당 검토 완료
+      tags:
+      - 식당 검토
+      description: 본인, RESTAURANT_REVIEW. 전체 후보 최초 열람 완료 필요. 반복 완료는 멱등.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewProgress'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    delete:
+      operationId: reopenRestaurantReview
+      summary: 본인 식당 검토 완료 취소
+      tags:
+      - 식당 검토
+      description: 본인, RESTAURANT_REVIEW. 확정 전만 가능. 열람 기록은 유지하며 반복 취소는 멱등.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewProgress'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+  /parties/{partyId}/restaurant-review/finalize:
+    post:
+      operationId: finalizeRestaurantReview
+      summary: 식당 검토 단계 확정
+      tags:
+      - 식당 검토
+      description: 방장, Party version. RESTAURANT_REVIEW에서 전원 명시적 완료 및 활성 후보 1개 이상 검증. RESTAURANT_FINALIZED로 전환.
+        다음 작업은 별도 호출.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      x-policy-status: provisional
+  /parties/{partyId}/restaurant-candidates/{candidateId}/menus:
+    get:
+      operationId: listRestaurantCandidateMenus
+      summary: 식당 후보 전체 메뉴 펼쳐보기
+      tags:
+      - 식당 검토
+      description: 해당 파티 참가자. 후보 매장의 현재 판매 메뉴이며 정보 부족·제한 충돌 여부는 주문 시 다시 검증한다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: candidateId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+  /jobs/{jobId}:
+    get:
+      operationId: getJob
+      summary: 후보 생성 작업 조회
+      tags:
+      - 작업
+      description: 해당 파티 참가자만 조회. 실패 code는 NO_ACTIVE_CANDIDATES, GENERATION_FAILED, MENU_INFORMATION_INCOMPLETE
+        등. 내부 모델 응답·개인 제한은 노출하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /parties/{partyId}/selected-restaurant:
+    put:
+      operationId: selectRestaurant
+      summary: 최종 식당 선택
+      tags:
+      - 식당 검토
+      description: 방장, Party version. RESTAURANT_FINALIZED의 살아남은 후보만 선택. RESTAURANT_SELECTED로 전환. 이후 취소·재선택 제외.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectRestaurantRequest'
+      x-policy-status: provisional
+  /store-qr/{qrToken}:
+    get:
+      operationId: getStoreQr
+      summary: QR 매장 정보 조회
+      tags:
+      - QR 연결
+      description: 공개 최소 정보만 반환. 잘못된 토큰 404, 폐기·만료 토큰 410. 주문 중단 상태는 orderEnabled=false.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreQrInfo'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '410':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: qrToken
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      security: []
+  /parties/{partyId}/store-connection:
+    post:
+      operationId: connectPartyStore
+      summary: 파티 매장 연결 및 주문 초안 생성
+      tags:
+      - QR 연결
+      description: 방장, Party version. RESTAURANT_SELECTED에서 선택 식당과 QR 일치·주문 가능 검증. 연결 및 유일 DRAFT 주문을 원자적으로 생성하고
+        ORDERING 반환.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreConnection'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreConnectionRequest'
+      x-policy-status: provisional
+  /parties/{partyId}/orders:
+    post:
+      operationId: ensurePartyOrder
+      summary: 연결된 파티 주문 초안 조회·복구
+      tags:
+      - 주문
+      description: 방장, ORDERING에서만 가능. 연결 과정에서 만든 유일 초안을 반환하거나 누락된 초안만 복구한다. 별도 두 번째 주문을 만들지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      x-policy-status: provisional
+  /parties/{partyId}/order:
+    get:
+      operationId: getPartyOrder
+      summary: 현재 파티 주문 조회
+      tags:
+      - 주문
+      description: 해당 파티 참가자만. 아직 주문이 없으면 404.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /store-qr/{qrToken}/guest-order-sessions:
+    post:
+      operationId: createQrGuestOrderSession
+      summary: 일반 QR 게스트 주문 시작
+      tags:
+      - QR 연결
+      description: 유효 QR·주문 가능 여부 검증. ORDER_GUEST와 단일 QR_GUEST DRAFT 생성. partyId=null. 종료 또는 24시간 만료. 제한 설정은 /me/dietary-restrictions
+        사용.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuestOrderSession'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '410':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: qrToken
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestOrderSessionRequest'
+      security: []
+      x-policy-status: provisional
+  /orders/{orderId}:
+    get:
+      operationId: getOrder
+      summary: 공동 주문 조회
+      tags:
+      - 주문
+      description: 주문에 속한 참가자 또는 해당 QR 주문 게스트. 본인 제한·타인 소거 정보는 반환하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /orders/{orderId}/menus:
+    get:
+      operationId: listOrderMenus
+      summary: 주문 가능한 메뉴·옵션 목록
+      tags:
+      - 주문
+      description: 주문자, DRAFT에서 현재 판매 메뉴 조회. 정보 부족·제한 충돌 메뉴는 제외. 서버는 항목 추가·제출 시 재검증한다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      x-policy-status: provisional
+  /orders/{orderId}/my-items:
+    post:
+      operationId: addMyOrderItem
+      summary: 본인 주문 항목 추가
+      tags:
+      - 주문
+      description: 본인, DRAFT이고 본인 선택 미완료. Order version. 파티 전원 제한 스냅샷·재료 정보·판매 상태·옵션 검증. 서버가 가격 계산. 갱신 Order 반환.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddOrderItemRequest'
+      x-policy-status: provisional
+  /orders/{orderId}/my-items/{orderItemId}:
+    patch:
+      operationId: updateMyOrderItem
+      summary: 본인 주문 항목 수정
+      tags:
+      - 주문
+      description: 항목 작성자, DRAFT이고 본인 선택 미완료. Order version. menuId 교체는 삭제 후 추가. 타인 항목은 404.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: orderItemId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderItemRequest'
+      x-policy-status: provisional
+    delete:
+      operationId: deleteMyOrderItem
+      summary: 본인 주문 항목 삭제
+      tags:
+      - 주문
+      description: 항목 작성자, DRAFT이고 본인 선택 미완료. Order version. 삭제 후 갱신된 Order와 ETag 반환.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: orderItemId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IfMatch'
+  /orders/{orderId}/members/me/complete:
+    post:
+      operationId: completeMyOrderSelection
+      summary: 본인 메뉴 선택 완료
+      tags:
+      - 주문
+      description: 본인, DRAFT. Order version. 본인 항목 1개 이상 필요. 메뉴·옵션·적용 제한으로 항목을 재검증한다. 모든 참가자가 별도로 완료해야 제출 가능. 같은
+        상태 요청은 멱등.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IfMatch'
+      x-policy-status: provisional
+    delete:
+      operationId: reopenMyOrderSelection
+      summary: 본인 메뉴 선택 완료 취소
+      tags:
+      - 주문
+      description: 본인, DRAFT. Order version. 완료 취소 후 본인 항목을 수정할 수 있다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IfMatch'
+      x-policy-status: provisional
+  /orders/{orderId}/submit:
+    post:
+      operationId: submitOrder
+      summary: 주문 제출
+      tags:
+      - 주문
+      description: PARTY는 방장·전원 선택 완료, QR_GUEST는 본인·선택 완료. Order version. DRAFT에서 매장·메뉴·제한·옵션 재검증. 가격 변경 시 DRAFT
+        가격 갱신·전원 완료 취소 후 409 ORDER_PRICE_CHANGED와 details.order 반환. 그 외 성공은 SUBMITTED. 내부 결제 없음.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      x-policy-status: provisional
+  /merchant/restaurants:
+    post:
+      operationId: createMerchantRestaurant
+      summary: 소유 매장 등록
+      tags:
+      - 사업자 매장
+      description: MERCHANT만. 소유자는 인증 주체로 서버가 설정. 사업자 권한 심사는 별도 운영 범위.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRestaurantRequest'
+    get:
+      operationId: listMerchantRestaurants
+      summary: 본인 소유 매장 목록
+      tags:
+      - 사업자 매장
+      description: 본인 소유 매장 목록
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+  /merchant/restaurants/{restaurantId}:
+    get:
+      operationId: getMerchantRestaurant
+      summary: 소유 매장 상세
+      tags:
+      - 사업자 매장
+      description: 해당 매장 소유 사업자만.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restaurantId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    patch:
+      operationId: updateMerchantRestaurant
+      summary: 소유 매장 수정
+      tags:
+      - 사업자 매장
+      description: 소유 사업자만. orderEnabled는 새 연결·제출을 차단하며 기존 SUBMITTED 주문은 별도 수락/거절 가능.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restaurantId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRestaurantRequest'
+  /merchant/restaurants/{restaurantId}/menus:
+    post:
+      operationId: createMerchantMenu
+      summary: 메뉴·옵션 등록
+      tags:
+      - 사업자 메뉴
+      description: 소유 사업자만. 카테고리·재료·알레르기·제한 코드 기준 정보 검증. minSelections<=maxSelections<=값 개수. 정보 부족이면 INCOMPLETE.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restaurantId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMenuRequest'
+      x-policy-status: provisional
+    get:
+      operationId: listMerchantMenus
+      summary: 소유 매장 메뉴 목록
+      tags:
+      - 사업자 메뉴
+      description: 소유 매장 메뉴 목록
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restaurantId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+  /merchant/menus/{menuId}:
+    get:
+      operationId: getMerchantMenu
+      summary: 메뉴 상세
+      tags:
+      - 사업자 메뉴
+      description: 메뉴 소속 매장 소유 사업자만.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: menuId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    patch:
+      operationId: updateMerchantMenu
+      summary: 메뉴·옵션 수정
+      tags:
+      - 사업자 메뉴
+      description: 소유 사업자만. 수정 시 메뉴 version 증가. 이미 제출한 주문 스냅샷은 변경하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: menuId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMenuRequest'
+      x-policy-status: provisional
+    delete:
+      operationId: deleteMerchantMenu
+      summary: 메뉴 논리 삭제
+      tags:
+      - 사업자 메뉴
+      description: 소유 사업자만. 과거 주문 스냅샷은 보존. 새 주문과 제출 재검증에서는 판매 불가.
+      responses:
+        '204':
+          description: 성공
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: menuId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /merchant/restaurants/{restaurantId}/qr-codes:
+    post:
+      operationId: createMerchantQrCode
+      summary: 매장 QR 발급
+      tags:
+      - 사업자 QR
+      description: 소유 사업자. 추측하기 어려운 토큰 발급. URL에 식당 ID나 관리자 토큰을 넣지 않는다.
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QrCode'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restaurantId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      x-policy-status: provisional
+    get:
+      operationId: listMerchantQrCodes
+      summary: 매장 QR 목록
+      tags:
+      - 사업자 QR
+      description: 소유 사업자만. 활성·폐기 QR 목록.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QrCodePage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restaurantId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      x-policy-status: provisional
+  /merchant/restaurants/{restaurantId}/qr-codes/{qrCodeId}:
+    delete:
+      operationId: revokeMerchantQrCode
+      summary: 매장 QR 폐기
+      tags:
+      - 사업자 QR
+      description: 소유 사업자만. 신규 연결만 차단하고 기존 주문을 취소하지 않는다.
+      responses:
+        '204':
+          description: 성공
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restaurantId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: qrCodeId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+  /merchant/orders:
+    get:
+      operationId: listMerchantOrders
+      summary: 사업자 주문 목록
+      tags:
+      - 사업자 주문
+      description: 소유 매장 주문 중 SUBMITTED 이후 주문만 반환. DRAFT는 공개하지 않는다. createdAt 내림차순, 동률은 ID로 안정 정렬.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      - name: restaurantId
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description: 소유 매장 ID. 생략 시 소유 전체 매장
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: createdAt 이상(UTC)
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: createdAt 미만(UTC); from보다 뒤여야 함
+      - name: status
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/OrderState'
+        description: ''
+  /merchant/orders/{orderId}:
+    get:
+      operationId: getMerchantOrder
+      summary: 사업자 주문 상세
+      tags:
+      - 사업자 주문
+      description: 소유 매장의 제출된 주문만. guestToken·개인 제한은 제외. myMemberId=null.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+  /merchant/orders/{orderId}/confirm:
+    post:
+      operationId: confirmMerchantOrder
+      summary: 주문 전체 수락 및 수수료 근거 기록
+      tags:
+      - 사업자 주문
+      description: 매장 소유 사업자, SUBMITTED, Order version. 본문 없음; 부분 수락 제외. 주문·파티·유일 수수료·감사 기록·outbox를 원자적으로 저장. 정책이
+        있으면 BILLABLE, 없으면 PENDING. ETag는 반환 order.version.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmOrderResult'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      x-policy-status: provisional
+  /merchant/orders/{orderId}/reject:
+    post:
+      operationId: rejectMerchantOrder
+      summary: 주문 전체 거절
+      tags:
+      - 사업자 주문
+      description: 소유 사업자, SUBMITTED, Order version. REJECTED 및 파티 ORDER_REJECTED로 종료. 수수료 생성 없음. 자동 재주문 제외.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          headers:
+            ETag:
+              description: 인용부호로 감싼 Party/Order/제한 revision. 복합 응답은 작업 대상 버전.
+              schema:
+                type: string
+              example: '"4"'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '412':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectOrderRequest'
+      x-policy-status: provisional
+  /merchant/commissions:
+    get:
+      operationId: listMerchantCommissions
+      summary: 수수료 근거 목록
+      tags:
+      - 수수료
+      description: 소유 매장만. 실제 출금 API가 아니다. 정책 미확정 PENDING도 포함한다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommissionPage'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      - name: restaurantId
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description: 소유 매장 ID. 생략 시 소유 전체 매장
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: createdAt 이상(UTC)
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: createdAt 미만(UTC); from보다 뒤여야 함
+      - name: status
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/CommissionState'
+        description: ''
+      x-policy-status: provisional
+  /merchant/commissions/{commissionId}:
+    get:
+      operationId: getMerchantCommission
+      summary: 수수료 근거 상세
+      tags:
+      - 수수료
+      description: 소유 매장만. 확인 당시 주문 금액·정책 ID·계산 결과를 조회하며 요율은 임의 가정하지 않는다.
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commission'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: commissionId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      x-policy-status: provisional
+  /parties/{partyId}/events:
+    get:
+      operationId: streamPartyEvents
+      summary: 실시간 이벤트 스트림
+      tags:
+      - 실시간
+      description: '파티 참가자만. Accept: text/event-stream, Authorization Bearer. fetch 스트림 사용. Last-Event-ID로 재연결,
+        eventId 중복 제거. 만료 커서는 409 후 새 스트림을 연결·버퍼링하며 GET 재동기화. 공통 소거 payload에 작성자·이름·개별 제한·eliminatedByMe를 넣지 않는다.
+        약 15초 heartbeat, 토큰 만료 시 종료. 상세 이벤트 목록은 Markdown 참조.'
+      responses:
+        '200':
+          description: SSE 스트림. JSON data의 형식은 components.schemas.Event. 최소 한 번 전달.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: 'id: event_123
+
+                event: order.confirmed
+
+                data: {"eventId":"event_123","type":"order.confirmed","occurredAt":"2026-10-24T04:10:00Z","orderId":"order_123","resourceVersion":8,"data":{"status":"CONFIRMED"}}
+
+
+                '
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: no-store
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: partyId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/LastEventId'
+      x-policy-status: provisional
+  /orders/{orderId}/events:
+    get:
+      operationId: streamOrderEvents
+      summary: 실시간 이벤트 스트림
+      tags:
+      - 실시간
+      description: '소속 주문자; QR 게스트 포함만. Accept: text/event-stream, Authorization Bearer. fetch 스트림 사용. Last-Event-ID로
+        재연결, eventId 중복 제거. 만료 커서는 409 후 새 스트림을 연결·버퍼링하며 GET 재동기화. 공통 소거 payload에 작성자·이름·개별 제한·eliminatedByMe를 넣지
+        않는다. 약 15초 heartbeat, 토큰 만료 시 종료. 상세 이벤트 목록은 Markdown 참조.'
+      responses:
+        '200':
+          description: SSE 스트림. JSON data의 형식은 components.schemas.Event. 최소 한 번 전달.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: 'id: event_123
+
+                event: order.confirmed
+
+                data: {"eventId":"event_123","type":"order.confirmed","occurredAt":"2026-10-24T04:10:00Z","orderId":"order_123","resourceVersion":8,"data":{"status":"CONFIRMED"}}
+
+
+                '
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: no-store
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/LastEventId'
+      x-policy-status: provisional
+  /merchant/restaurants/{restaurantId}/events:
+    get:
+      operationId: streamMerchantEvents
+      summary: 실시간 이벤트 스트림
+      tags:
+      - 실시간
+      description: '소유 매장 사업자만. Accept: text/event-stream, Authorization Bearer. fetch 스트림 사용. Last-Event-ID로 재연결,
+        eventId 중복 제거. 만료 커서는 409 후 새 스트림을 연결·버퍼링하며 GET 재동기화. 공통 소거 payload에 작성자·이름·개별 제한·eliminatedByMe를 넣지 않는다.
+        약 15초 heartbeat, 토큰 만료 시 종료. 상세 이벤트 목록은 Markdown 참조.'
+      responses:
+        '200':
+          description: SSE 스트림. JSON data의 형식은 components.schemas.Event. 최소 한 번 전달.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: 'id: event_123
+
+                event: order.confirmed
+
+                data: {"eventId":"event_123","type":"order.confirmed","occurredAt":"2026-10-24T04:10:00Z","orderId":"order_123","resourceVersion":8,"data":{"status":"CONFIRMED"}}
+
+
+                '
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: no-store
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: restaurantId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - $ref: '#/components/parameters/LastEventId'
+      x-policy-status: provisional
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 사용자 accessToken 또는 범위가 제한된 guestToken. 주체·리소스별 권한을 추가 검증한다.
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true
+            requestId:
+              type: string
+              minLength: 1
+              maxLength: 128
+          required:
+          - code
+          - message
+          - requestId
+      required:
+      - error
+      examples:
+      - error:
+          code: INVALID_PARTY_STATE
+          message: 현재 단계에서는 식당을 선택할 수 없습니다.
+          details:
+            currentState: CATEGORY_REVIEW
+            allowedStates:
+            - RESTAURANT_FINALIZED
+          requestId: request_123
+    User:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 30
+        principalType:
+          type: string
+          enum:
+          - USER
+          - PARTY_GUEST
+          - ORDER_GUEST
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - USER
+            - MERCHANT
+      required:
+      - id
+      - displayName
+      - principalType
+      - roles
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        provider:
+          type: string
+          description: 배포 시 허용된 인증 공급자 코드
+        authorizationCode:
+          type: string
+          minLength: 1
+        redirectUri:
+          type: string
+          format: uri
+        codeVerifier:
+          type: string
+          minLength: 43
+          maxLength: 128
+      required:
+      - provider
+      - authorizationCode
+      - redirectUri
+    RefreshRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        refreshToken:
+          type: string
+          minLength: 1
+      required:
+      - refreshToken
+    AuthTokens:
+      type: object
+      additionalProperties: false
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          enum:
+          - Bearer
+        expiresIn:
+          type: integer
+          minimum: 1
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - accessToken
+      - refreshToken
+      - tokenType
+      - expiresIn
+      - user
+    GuestSessionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        inviteToken:
+          type: string
+          minLength: 1
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 30
+        deviceId:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - inviteToken
+      - displayName
+      - deviceId
+      examples:
+      - inviteToken: invite_token_example
+        displayName: 시온
+        deviceId: device_example
+    GuestSession:
+      type: object
+      additionalProperties: false
+      properties:
+        guestToken:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        guestUser:
+          $ref: '#/components/schemas/User'
+        partyId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        memberId:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - guestToken
+      - expiresAt
+      - guestUser
+      - partyId
+      - memberId
+    CodeItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        code:
+          type: string
+        name:
+          type: string
+        imageUrl:
+          anyOf:
+          - type: string
+            format: uri
+          - type: 'null'
+      required:
+      - id
+      - code
+      - name
+    CodePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeItem'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    RestrictionTarget:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum:
+          - ALLERGY
+          - RELIGIOUS
+          - VEGETARIAN
+          - INGREDIENT_AVOIDANCE
+          - MEDICAL
+          - OTHER
+      required:
+      - code
+      - label
+      - type
+    RestrictionTargetPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestrictionTarget'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    RestrictionInput:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+          - ALLERGY
+          - RELIGIOUS
+          - VEGETARIAN
+          - INGREDIENT_AVOIDANCE
+          - MEDICAL
+          - OTHER
+        targetCode:
+          type: string
+          minLength: 1
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+        severity:
+          type: string
+          enum:
+          - HARD_BLOCK
+      required:
+      - type
+      - targetCode
+      - label
+      - severity
+      examples:
+      - type: ALLERGY
+        targetCode: PEANUT
+        label: 땅콩
+        severity: HARD_BLOCK
+    DietaryRestriction:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        type:
+          type: string
+          enum:
+          - ALLERGY
+          - RELIGIOUS
+          - VEGETARIAN
+          - INGREDIENT_AVOIDANCE
+          - MEDICAL
+          - OTHER
+        targetCode:
+          type: string
+          minLength: 1
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+        severity:
+          type: string
+          enum:
+          - HARD_BLOCK
+      required:
+      - id
+      - type
+      - targetCode
+      - label
+      - severity
+    RestrictionCollection:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DietaryRestriction'
+        revision:
+          type: integer
+          minimum: 1
+      required:
+      - items
+      - revision
+    ReplaceRestrictionsRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestrictionInput'
+          maxItems: 50
+      required:
+      - items
+    DietaryConfirmationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        restrictionRevision:
+          type: integer
+          minimum: 1
+        confirmed:
+          type: boolean
+      required:
+      - restrictionRevision
+      - confirmed
+    Location:
+      type: object
+      additionalProperties: false
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        address:
+          type: string
+          maxLength: 300
+      required:
+      - latitude
+      - longitude
+    PartyState:
+      type: string
+      enum:
+      - WAITING
+      - CATEGORY_GENERATING
+      - CATEGORY_REVIEW
+      - CATEGORY_FINALIZED
+      - RESTAURANT_GENERATING
+      - RESTAURANT_REVIEW
+      - RESTAURANT_FINALIZED
+      - RESTAURANT_SELECTED
+      - STORE_CONNECTED
+      - ORDERING
+      - ORDER_SUBMITTED
+      - ORDER_CONFIRMED
+      - ORDER_REJECTED
+      - CANCELED
+    CreatePartyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        scheduledAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        location:
+          $ref: '#/components/schemas/Location'
+        searchRadiusMeters:
+          type: integer
+          minimum: 100
+          maximum: 5000
+        budgetPerPerson:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 2147483647
+            description: KRW 원 단위 정수
+          - type: 'null'
+        mealStyle:
+          type: string
+          enum:
+          - INDIVIDUAL_ORDER
+      required:
+      - title
+      - location
+      - searchRadiusMeters
+      - mealStyle
+      examples:
+      - title: 토요일 점심 모임
+        scheduledAt: '2026-10-24T03:30:00Z'
+        location:
+          latitude: 37.5665
+          longitude: 126.978
+          address: 서울특별시 중구
+        searchRadiusMeters: 1000
+        budgetPerPerson: 15000
+        mealStyle: INDIVIDUAL_ORDER
+    UpdatePartyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        scheduledAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        location:
+          $ref: '#/components/schemas/Location'
+        searchRadiusMeters:
+          type: integer
+          minimum: 100
+          maximum: 5000
+        budgetPerPerson:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 2147483647
+            description: KRW 원 단위 정수
+          - type: 'null'
+        mealStyle:
+          type: string
+          enum:
+          - INDIVIDUAL_ORDER
+      required: []
+      minProperties: 1
+    Member:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 30
+        role:
+          type: string
+          enum:
+          - HOST
+          - MEMBER
+        connectionStatus:
+          type: string
+          enum:
+          - ONLINE
+          - OFFLINE
+        restrictionConfirmed:
+          type: boolean
+        categoryReviewStatus:
+          type: string
+          enum:
+          - NOT_STARTED
+          - IN_PROGRESS
+          - COMPLETED
+        restaurantReviewStatus:
+          type: string
+          enum:
+          - NOT_STARTED
+          - IN_PROGRESS
+          - COMPLETED
+      required:
+      - id
+      - displayName
+      - role
+      - connectionStatus
+      - restrictionConfirmed
+      - categoryReviewStatus
+      - restaurantReviewStatus
+    MemberPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    CandidateSet:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        kind:
+          type: string
+          enum:
+          - CATEGORY
+          - RESTAURANT
+        revision:
+          type: integer
+          minimum: 1
+        totalCount:
+          type: integer
+          minimum: 0
+        activeCount:
+          type: integer
+          minimum: 0
+        finalized:
+          type: boolean
+      required:
+      - id
+      - kind
+      - revision
+      - totalCount
+      - activeCount
+      - finalized
+    Party:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        title:
+          type: string
+        hostMemberId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        myMemberId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        state:
+          $ref: '#/components/schemas/PartyState'
+        version:
+          type: integer
+          minimum: 1
+        scheduledAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        location:
+          $ref: '#/components/schemas/Location'
+        searchRadiusMeters:
+          type: integer
+          minimum: 100
+          maximum: 5000
+        budgetPerPerson:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 2147483647
+            description: KRW 원 단위 정수
+          - type: 'null'
+        mealStyle:
+          type: string
+          enum:
+          - INDIVIDUAL_ORDER
+        memberCount:
+          type: integer
+          minimum: 1
+        maxMembers:
+          type: integer
+          minimum: 1
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+        candidateSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/CandidateSet'
+        selectedRestaurantId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        orderId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        generationJobId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - title
+      - hostMemberId
+      - myMemberId
+      - state
+      - version
+      - scheduledAt
+      - location
+      - searchRadiusMeters
+      - budgetPerPerson
+      - mealStyle
+      - memberCount
+      - maxMembers
+      - members
+      - candidateSets
+      - selectedRestaurantId
+      - orderId
+      - generationJobId
+      - createdAt
+      examples:
+      - title: 토요일 점심 모임
+        scheduledAt: '2026-10-24T03:30:00Z'
+        location:
+          latitude: 37.5665
+          longitude: 126.978
+          address: 서울특별시 중구
+        searchRadiusMeters: 1000
+        budgetPerPerson: 15000
+        mealStyle: INDIVIDUAL_ORDER
+        id: party_123
+        hostMemberId: member_123
+        myMemberId: member_123
+        state: WAITING
+        version: 1
+        memberCount: 1
+        maxMembers: 8
+        members:
+        - id: member_123
+          displayName: 시온
+          role: HOST
+          connectionStatus: ONLINE
+          restrictionConfirmed: false
+          categoryReviewStatus: NOT_STARTED
+          restaurantReviewStatus: NOT_STARTED
+        candidateSets: []
+        selectedRestaurantId: null
+        orderId: null
+        generationJobId: null
+        createdAt: '2026-10-24T03:00:00Z'
+    PartyPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Party'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    InviteLinkRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        expiresInSeconds:
+          type: integer
+          minimum: 60
+          maximum: 86400
+          default: 86400
+      required: []
+    InviteLink:
+      type: object
+      additionalProperties: false
+      properties:
+        inviteToken:
+          type: string
+        inviteUrl:
+          type: string
+          format: uri
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+      - inviteToken
+      - inviteUrl
+      - expiresAt
+    UpdateMemberRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 30
+      required:
+      - displayName
+    Job:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        partyId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        kind:
+          type: string
+          enum:
+          - CATEGORY_GENERATION
+          - RESTAURANT_GENERATION
+        status:
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSING
+          - SUCCEEDED
+          - FAILED
+          - CANCELED
+        candidateSetId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        error:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+            required:
+            - code
+            - message
+          - type: 'null'
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+      required:
+      - id
+      - partyId
+      - kind
+      - status
+      - candidateSetId
+      - error
+      - createdAt
+      - completedAt
+      examples:
+      - id: job_123
+        partyId: party_123
+        kind: CATEGORY_GENERATION
+        status: PROCESSING
+        candidateSetId: null
+        error: null
+        createdAt: '2026-10-24T03:10:00Z'
+        completedAt: null
+    CategoryCandidate:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        candidateSetId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - ELIMINATED
+        viewedByMe:
+          type: boolean
+        eliminatedByMe:
+          type: boolean
+        category:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+              minLength: 1
+              maxLength: 128
+            name:
+              type: string
+            imageUrl:
+              anyOf:
+              - type: string
+                format: uri
+              - type: 'null'
+          required:
+          - id
+          - name
+          - imageUrl
+        nearbyRestaurantCount:
+          type: integer
+          minimum: 1
+        priceRange:
+          type: object
+          additionalProperties: false
+          properties:
+            min:
+              type: integer
+              minimum: 0
+              maximum: 2147483647
+              description: KRW 원 단위 정수
+            max:
+              type: integer
+              minimum: 0
+              maximum: 2147483647
+              description: KRW 원 단위 정수
+          required:
+          - min
+          - max
+      required:
+      - id
+      - candidateSetId
+      - status
+      - viewedByMe
+      - eliminatedByMe
+      - category
+      - nearbyRestaurantCount
+      - priceRange
+    CategoryCandidatePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryCandidate'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+        candidateSet:
+          $ref: '#/components/schemas/CandidateSet'
+      required:
+      - items
+      - nextCursor
+      - candidateSet
+    OptionValue:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        name:
+          type: string
+          minLength: 1
+        additionalPrice:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        salesStatus:
+          type: string
+          enum:
+          - AVAILABLE
+          - SOLD_OUT
+      required:
+      - id
+      - name
+      - additionalPrice
+      - salesStatus
+    MenuOption:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        name:
+          type: string
+          minLength: 1
+        minSelections:
+          type: integer
+          minimum: 0
+        maxSelections:
+          type: integer
+          minimum: 1
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionValue'
+          minItems: 1
+      required:
+      - id
+      - name
+      - minSelections
+      - maxSelections
+      - values
+    CreateMenuRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        price:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        categoryId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        ingredientIds:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+          uniqueItems: true
+        allergenCodes:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        restrictionTargetCodes:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+          description: 종교·채식·기타 필수 제한과 충돌하는 기준 코드
+        informationStatus:
+          type: string
+          enum:
+          - COMPLETE
+          - INCOMPLETE
+        imageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 10
+        isRepresentative:
+          type: boolean
+        salesStatus:
+          type: string
+          enum:
+          - AVAILABLE
+          - SOLD_OUT
+          - HIDDEN
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuOption'
+      required:
+      - name
+      - description
+      - price
+      - categoryId
+      - ingredientIds
+      - allergenCodes
+      - restrictionTargetCodes
+      - informationStatus
+      - imageUrls
+      - isRepresentative
+      - salesStatus
+      - options
+    UpdateMenuRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        price:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        categoryId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        ingredientIds:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+          uniqueItems: true
+        allergenCodes:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        restrictionTargetCodes:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+          description: 종교·채식·기타 필수 제한과 충돌하는 기준 코드
+        informationStatus:
+          type: string
+          enum:
+          - COMPLETE
+          - INCOMPLETE
+        imageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 10
+        isRepresentative:
+          type: boolean
+        salesStatus:
+          type: string
+          enum:
+          - AVAILABLE
+          - SOLD_OUT
+          - HIDDEN
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuOption'
+      required: []
+      minProperties: 1
+    Menu:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        restaurantId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        version:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        price:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        categoryId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        ingredientIds:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+          uniqueItems: true
+        allergenCodes:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        restrictionTargetCodes:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+          description: 종교·채식·기타 필수 제한과 충돌하는 기준 코드
+        informationStatus:
+          type: string
+          enum:
+          - COMPLETE
+          - INCOMPLETE
+        imageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 10
+        isRepresentative:
+          type: boolean
+        salesStatus:
+          type: string
+          enum:
+          - AVAILABLE
+          - SOLD_OUT
+          - HIDDEN
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuOption'
+      required:
+      - id
+      - restaurantId
+      - version
+      - name
+      - description
+      - price
+      - categoryId
+      - ingredientIds
+      - allergenCodes
+      - restrictionTargetCodes
+      - informationStatus
+      - imageUrls
+      - isRepresentative
+      - salesStatus
+      - options
+    MenuPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Menu'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    RestaurantSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        name:
+          type: string
+        location:
+          $ref: '#/components/schemas/Location'
+        distanceMeters:
+          type: integer
+          minimum: 0
+        imageUrl:
+          anyOf:
+          - type: string
+            format: uri
+          - type: 'null'
+      required:
+      - id
+      - name
+      - location
+      - distanceMeters
+      - imageUrl
+    RepresentativeMenu:
+      type: object
+      additionalProperties: false
+      properties:
+        menuId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        name:
+          type: string
+        price:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        imageUrl:
+          anyOf:
+          - type: string
+            format: uri
+          - type: 'null'
+      required:
+      - menuId
+      - name
+      - price
+      - imageUrl
+    RestaurantCandidate:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        candidateSetId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - ELIMINATED
+        viewedByMe:
+          type: boolean
+        eliminatedByMe:
+          type: boolean
+        restaurant:
+          $ref: '#/components/schemas/RestaurantSummary'
+        representativeMenus:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepresentativeMenu'
+        matchingCategoryIds:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+          minItems: 1
+      required:
+      - id
+      - candidateSetId
+      - status
+      - viewedByMe
+      - eliminatedByMe
+      - restaurant
+      - representativeMenus
+      - matchingCategoryIds
+    RestaurantCandidatePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantCandidate'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+        candidateSet:
+          $ref: '#/components/schemas/CandidateSet'
+      required:
+      - items
+      - nextCursor
+      - candidateSet
+    ViewResult:
+      type: object
+      additionalProperties: false
+      properties:
+        candidateId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        candidateSetId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        viewedByMe:
+          type: boolean
+        viewedCount:
+          type: integer
+          minimum: 0
+        totalCount:
+          type: integer
+          minimum: 0
+      required:
+      - candidateId
+      - candidateSetId
+      - viewedByMe
+      - viewedCount
+      - totalCount
+    EliminationResult:
+      type: object
+      additionalProperties: false
+      properties:
+        candidateId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - ELIMINATED
+        eliminatedByMe:
+          type: boolean
+        partyVersion:
+          type: integer
+          minimum: 1
+        reviewReset:
+          type: boolean
+      required:
+      - candidateId
+      - status
+      - eliminatedByMe
+      - partyVersion
+      - reviewReset
+      examples:
+      - candidateId: candidate_123
+        status: ELIMINATED
+        eliminatedByMe: true
+        partyVersion: 12
+        reviewReset: true
+    ReviewProgress:
+      type: object
+      additionalProperties: false
+      properties:
+        candidateSetId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        viewedCount:
+          type: integer
+          minimum: 0
+        totalCount:
+          type: integer
+          minimum: 0
+        reviewCompleted:
+          type: boolean
+        partyCompletedMemberCount:
+          type: integer
+          minimum: 0
+        partyMemberCount:
+          type: integer
+          minimum: 1
+        allMembersCompleted:
+          type: boolean
+      required:
+      - candidateSetId
+      - viewedCount
+      - totalCount
+      - reviewCompleted
+      - partyCompletedMemberCount
+      - partyMemberCount
+      - allMembersCompleted
+      examples:
+      - candidateSetId: set_category_123
+        viewedCount: 18
+        totalCount: 20
+        reviewCompleted: false
+        partyCompletedMemberCount: 2
+        partyMemberCount: 4
+        allMembersCompleted: false
+    SelectRestaurantRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        restaurantCandidateId:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - restaurantCandidateId
+    BusinessHour:
+      type: object
+      additionalProperties: false
+      properties:
+        dayOfWeek:
+          type: integer
+          minimum: 1
+          maximum: 7
+        opensAt:
+          type: string
+          pattern: ^([01]\d|2[0-3]):[0-5]\d$
+        closesAt:
+          type: string
+          pattern: ^([01]\d|2[0-3]):[0-5]\d$
+        closesNextDay:
+          type: boolean
+      required:
+      - dayOfWeek
+      - opensAt
+      - closesAt
+      - closesNextDay
+    CreateRestaurantRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        address:
+          type: string
+          minLength: 1
+          maxLength: 300
+        location:
+          $ref: '#/components/schemas/Location'
+        businessHours:
+          type: array
+          items:
+            $ref: '#/components/schemas/BusinessHour'
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 30
+        orderEnabled:
+          type: boolean
+      required:
+      - name
+      - address
+      - location
+      - businessHours
+      - phone
+      - orderEnabled
+    UpdateRestaurantRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        address:
+          type: string
+          minLength: 1
+          maxLength: 300
+        location:
+          $ref: '#/components/schemas/Location'
+        businessHours:
+          type: array
+          items:
+            $ref: '#/components/schemas/BusinessHour'
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 30
+        orderEnabled:
+          type: boolean
+      required: []
+      minProperties: 1
+    Restaurant:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        version:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        address:
+          type: string
+          minLength: 1
+          maxLength: 300
+        location:
+          $ref: '#/components/schemas/Location'
+        businessHours:
+          type: array
+          items:
+            $ref: '#/components/schemas/BusinessHour'
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 30
+        orderEnabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - version
+      - name
+      - address
+      - location
+      - businessHours
+      - phone
+      - orderEnabled
+      - createdAt
+    RestaurantPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Restaurant'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    StoreQrInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        restaurantId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        restaurantName:
+          type: string
+        orderEnabled:
+          type: boolean
+      required:
+      - restaurantId
+      - restaurantName
+      - orderEnabled
+    QrCode:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        restaurantId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        qrToken:
+          type: string
+        qrUrl:
+          type: string
+          format: uri
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - restaurantId
+      - qrToken
+      - qrUrl
+      - active
+      - createdAt
+    QrCodePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QrCode'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    StoreConnectionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        qrToken:
+          type: string
+          minLength: 1
+      required:
+      - qrToken
+    StoreConnection:
+      type: object
+      additionalProperties: false
+      properties:
+        party:
+          $ref: '#/components/schemas/Party'
+        order:
+          $ref: '#/components/schemas/Order'
+      required:
+      - party
+      - order
+    GuestOrderSessionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 30
+        deviceId:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - displayName
+      - deviceId
+    GuestOrderSession:
+      type: object
+      additionalProperties: false
+      properties:
+        guestToken:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        guestUser:
+          $ref: '#/components/schemas/User'
+        order:
+          $ref: '#/components/schemas/Order'
+      required:
+      - guestToken
+      - expiresAt
+      - guestUser
+      - order
+    OptionSelection:
+      type: object
+      additionalProperties: false
+      properties:
+        optionId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        valueId:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - optionId
+      - valueId
+    AddOrderItemRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        menuId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 99
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionSelection'
+          uniqueItems: true
+        request:
+          type: string
+          maxLength: 300
+      required:
+      - menuId
+      - quantity
+      - options
+      examples:
+      - menuId: menu_123
+        quantity: 1
+        options:
+        - optionId: spicy_level
+          valueId: level_1
+        request: 고수 빼주세요
+    UpdateOrderItemRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 99
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionSelection'
+          uniqueItems: true
+        request:
+          type: string
+          maxLength: 300
+      required: []
+      minProperties: 1
+    OrderItemOption:
+      type: object
+      additionalProperties: false
+      properties:
+        optionId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        valueId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        optionName:
+          type: string
+        valueName:
+          type: string
+        additionalPrice:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+      required:
+      - optionId
+      - valueId
+      - optionName
+      - valueName
+      - additionalPrice
+    OrderItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        menuId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        menuName:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 99
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemOption'
+        request:
+          type: string
+          maxLength: 300
+        unitPrice:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        lineAmount:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        menuVersion:
+          type: integer
+          minimum: 1
+      required:
+      - id
+      - menuId
+      - menuName
+      - quantity
+      - options
+      - request
+      - unitPrice
+      - lineAmount
+      - menuVersion
+    OrderMember:
+      type: object
+      additionalProperties: false
+      properties:
+        memberId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 30
+        selectionStatus:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+      required:
+      - memberId
+      - displayName
+      - selectionStatus
+      - items
+    OrderState:
+      type: string
+      enum:
+      - DRAFT
+      - SUBMITTED
+      - CONFIRMED
+      - REJECTED
+      - CANCELED
+    RejectOrderRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reasonCode:
+          type: string
+          enum:
+          - SOLD_OUT
+          - STORE_CLOSED
+          - CAPACITY_EXCEEDED
+          - OTHER
+        message:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - reasonCode
+      - message
+      examples:
+      - reasonCode: SOLD_OUT
+        message: 일부 메뉴가 품절되었습니다.
+    Order:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        type:
+          type: string
+          enum:
+          - PARTY
+          - QR_GUEST
+        status:
+          $ref: '#/components/schemas/OrderState'
+        version:
+          type: integer
+          minimum: 1
+        partyId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        restaurantId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        myMemberId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderMember'
+          minItems: 1
+        totalAmount:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        pricingVersion:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        submittedAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        confirmedAt:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        rejection:
+          anyOf:
+          - $ref: '#/components/schemas/RejectOrderRequest'
+          - type: 'null'
+      required:
+      - id
+      - type
+      - status
+      - version
+      - partyId
+      - restaurantId
+      - myMemberId
+      - members
+      - totalAmount
+      - pricingVersion
+      - createdAt
+      - submittedAt
+      - confirmedAt
+      - rejection
+      examples:
+      - id: order_123
+        type: PARTY
+        status: DRAFT
+        version: 1
+        partyId: party_123
+        restaurantId: restaurant_123
+        myMemberId: member_123
+        members:
+        - memberId: member_123
+          displayName: 시온
+          selectionStatus: IN_PROGRESS
+          items: []
+        totalAmount: 0
+        pricingVersion: 1
+        createdAt: '2026-10-24T04:00:00Z'
+        submittedAt: null
+        confirmedAt: null
+        rejection: null
+    OrderPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    CommissionState:
+      type: string
+      enum:
+      - PENDING
+      - BILLABLE
+      - INVOICED
+      - PAID
+      - VOIDED
+    Commission:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        orderId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        restaurantId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        basis:
+          type: string
+          enum:
+          - ORDER_CONFIRMED
+        orderAmount:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: KRW 원 단위 정수
+        policyId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        feeType:
+          anyOf:
+          - type: string
+            enum:
+            - PERCENTAGE
+            - FIXED
+          - type: 'null'
+        feeRate:
+          anyOf:
+          - type: number
+            minimum: 0
+            maximum: 1
+          - type: 'null'
+        feeAmount:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 2147483647
+            description: KRW 원 단위 정수
+          - type: 'null'
+        status:
+          $ref: '#/components/schemas/CommissionState'
+        createdAt:
+          type: string
+          format: date-time
+      required:
+      - id
+      - orderId
+      - restaurantId
+      - basis
+      - orderAmount
+      - policyId
+      - feeType
+      - feeRate
+      - feeAmount
+      - status
+      - createdAt
+      examples:
+      - id: commission_123
+        orderId: order_123
+        restaurantId: restaurant_123
+        basis: ORDER_CONFIRMED
+        orderAmount: 42000
+        policyId: null
+        feeType: null
+        feeRate: null
+        feeAmount: null
+        status: PENDING
+        createdAt: '2026-10-24T04:10:00Z'
+    CommissionPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Commission'
+        nextCursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+      required:
+      - items
+      - nextCursor
+    ConfirmOrderResult:
+      type: object
+      additionalProperties: false
+      properties:
+        order:
+          $ref: '#/components/schemas/Order'
+        commission:
+          $ref: '#/components/schemas/Commission'
+      required:
+      - order
+      - commission
+    Event:
+      type: object
+      additionalProperties: false
+      properties:
+        eventId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        type:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        partyId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        orderId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        restaurantId:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        resourceVersion:
+          type: integer
+          minimum: 1
+        data:
+          type: object
+          additionalProperties: true
+      required:
+      - eventId
+      - type
+      - occurredAt
+      - resourceVersion
+      - data
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: 주체·메서드·경로별 24시간 보관. 동일 키·동일 본문은 최초 결과 재전송. 다른 본문은 409.
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 200
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: 인용부호로 감싼 버전. Party/Order/제한 revision 중 작업 설명의 기준을 사용한다.
+      schema:
+        type: string
+        pattern: ^"[1-9][0-9]*"$
+      example: '"3"'
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+      description: 이전 응답의 nextCursor
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    LastEventId:
+      name: Last-Event-ID
+      in: header
+      schema:
+        type: string
+      description: 재연결할 스트림의 마지막 eventId. 보관 만료 시 409 EVENT_CURSOR_EXPIRED.
+  responses:
+    Error:
+      description: 공통 오류. HTTP 코드 및 error.code는 Markdown 오류 규약 참조.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
