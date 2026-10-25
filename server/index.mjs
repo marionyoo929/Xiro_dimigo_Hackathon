@@ -13,5 +13,5 @@ if (!demo) {
   instance.app.use(express.static(resolve(root, 'dist'), { etag: true, maxAge: '1h' }))
   instance.app.get('/{*path}', (_req, res) => res.sendFile(resolve(root, 'dist/index.html')))
 }
-const server = instance.app.listen(Number(process.env.API_PORT || 3001), process.env.API_HOST || '127.0.0.1', () => console.log(`XIRO API http://${process.env.API_HOST || '127.0.0.1'}:${server.address().port}${demo ? ' (explicit demo mode)' : ''}`))
+const server = instance.app.listen(Number(process.env.API_PORT || 3001), process.env.API_HOST || '0.0.0.0', () => console.log(`XIRO API http://${process.env.API_HOST || '0.0.0.0'}:${server.address().port}${demo ? ' (explicit demo mode)' : ''}`))
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { instance.close(); server.close(() => process.exit(0)) })
